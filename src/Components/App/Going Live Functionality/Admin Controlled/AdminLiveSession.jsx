@@ -1,9 +1,9 @@
 import { BadgePercent, Ban, BinaryIcon, ChartColumn, Cog, Donut, ExternalLink, Image, Lightbulb, MessageCircle, MessageCircleMore, PencilLine, Share, Timer, User, Users } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { IoMdArrowRoundBack, IoMdArrowRoundForward } from 'react-icons/io'
-import {  NavLink, useNavigate, useParams } from 'react-router'
+import { NavLink, useNavigate, useParams } from 'react-router'
 import { useAuth } from '../../../../Context/authContext'
-import {  FaExclamationTriangle } from 'react-icons/fa'
+import { FaExclamationTriangle } from 'react-icons/fa'
 import PopUp from './Pop ups/PopUp'
 import CommentSection from './Pop ups/CommentSection'
 import ParticipantResponse from './Pop ups/ParticipantResponse'
@@ -50,6 +50,7 @@ const AdminLiveSession = () => {
   const [openComment, setOpenComment] = useState(false);
   const [timerInfo, setTimerInfo] = useState(false);
   const [startTimer, setStartTimer] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
   const [showCommentSection, setShowCommentSection] = useState(false);
   const [showParticipant, setShowParticipant] = useState(false);
 
@@ -333,6 +334,11 @@ const AdminLiveSession = () => {
 
             <div className='p-1 flex sm:hidden  border border-stone-200 rounded-full bg-gray-200'>
               <BsThreeDots className='cursor-pointer' onClick={() => setShowOptions(!showOptions)} />
+              <div className={`absolute transition-all ${showOptions ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none"}  bg-white font-Outfit p-5  rounded-xl shadow-sm flex flex-col gap-3 top-12 z-[999999]  `}>
+                <div onClick={() => { setShareLinkPopUp(true); setShowOptions(false) }} className='flex justify-center cursor-pointer items-center'>
+                  <h1 className='pt-1'>Share</h1>
+                </div>
+              </div>
             </div>
 
             <div className='h-6 w-1 border-l  border-l-stone-400'></div>
@@ -424,6 +430,7 @@ const AdminLiveSession = () => {
             <div
               onMouseEnter={() => setShareLink(true)}
               onMouseLeave={() => setShareLink(false)}
+              onClick={() => setShareLinkPopUp(true)}
               className=' relative bg-amber-100 border flex justify-center items-center  cursor-pointer border-amber-400    p-3 rounded-full'>
               <div className='absolute top-1 flex left-2'>
                 <PopUp isVisible={shareLink} value={"Share the Link to all"} />

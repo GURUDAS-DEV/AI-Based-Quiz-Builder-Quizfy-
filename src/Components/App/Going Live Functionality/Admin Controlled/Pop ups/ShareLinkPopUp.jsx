@@ -27,7 +27,7 @@ const ShareLinkPopUp = ({presentationId, onClose}) => {
     }
   return (
     <div className=' w-screen h-screen fixed flex justify-center items-center transition-all duration-500 ease-out inset-0 bg-black/40 z-50 '>
-        <div className='bg-white p-4 w-[35%] border-white rounded-2xl shadow-lg'>
+        <div className='bg-white p-4 w-[84%] md:w-[35%] border-white rounded-2xl shadow-lg'>
             <div>
                 <div className='font-Montserrat font-bold flex justify-between'>
                     <h1>Share this Presentation</h1>
