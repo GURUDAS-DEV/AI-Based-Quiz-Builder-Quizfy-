@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       const accessToken = data.accessToken;
 
-      if (accessToken) {
+      if (accessToken) { 
         localStorage.setItem("accessToken", accessToken);
         const decoded = parseJWT(accessToken);
 
