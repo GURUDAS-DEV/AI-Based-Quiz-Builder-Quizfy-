@@ -2,7 +2,7 @@
 
 ![Quizfy Logo](./src/assets/Images/Logo/LOGO.png)
 
-[![Vite Build](https://img.shields.io/badge/Vite-4.5.0-blue?logo=vite)](https://vitejs.dev)  
+[![Vite Build](https://img.shields.io/badge/Vite-5.0.0-blue?logo=vite)](https://vitejs.dev)  
 [![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)](https://reactjs.org)  
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
@@ -18,11 +18,11 @@
 
 ## Overview  
 
-Quizfy is a modern web application that lets educators, corporate trainers, and event organizers **create AI‑generated quizzes in seconds** and **run real‑time live quiz sessions** with participants. The frontend is built with React 19, Vite, and TailwindCSS, while a Node/Express backend (hosted at `https://quizidy-backend.duckdns.org`) handles authentication, OpenAI/Gemini‑driven question generation, and Socket.io‑based live interaction.
+Quizfy is a modern web application that lets educators, corporate trainers, and event organizers **create AI‑generated quizzes in seconds** and **run real‑time live quiz sessions** with participants. The frontend is built with React 19, Vite 5, and TailwindCSS, while a Node/Express backend (hosted at `https://quizidy-backend.duckdns.org`) handles authentication, OpenAI/Gemini‑driven question generation, and Socket.io‑based live interaction.
 
 **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.5.0` (stable).  
+**Current version:** `1.6.0` (stable).  
 
 ---  
 
@@ -42,6 +42,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | **Extensible Plugin System** | Component‑based architecture makes it easy to add new question types or visualizations. | 🧪 Experimental |
 | **AI Features Page** | Dedicated UI for exploring AI‑generated content, previewing quizzes, and editing before saving. | ✅ Stable |
 | **Multilingual Support** *(new)* | Generate quizzes in multiple languages using the underlying LLMs. | 🧪 Experimental |
+| **AI‑Powered Quiz Analytics** *(new)* | Advanced insights such as difficulty‑based heatmaps and participant engagement metrics. | 🧪 Experimental |
 
 ---  
 
@@ -50,7 +51,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | **Framework** | React 19 (`react-router@7`) | UI rendering & routing |
-| **Bundler / Dev Server** | Vite 7 | Fast HMR & production builds |
+| **Bundler / Dev Server** | Vite 5 | Fast HMR & production builds |
 | **Styling** | TailwindCSS 4, PostCSS, Autoprefixer | Utility‑first responsive design |
 | **Icons** | `lucide-react`, `react-icons`, `@flaticon/flaticon-uicons` | Consistent SVG icon set |
 | **AI** | `@google/genai`, `openai` | Generate quiz content |
@@ -180,6 +181,7 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `PUT` | `/quiz/:id/review` | ✅ | Saves edits made on the **AI Quiz Review & Edit** page. | `{ "message": "Quiz updated successfully." }` |
 | `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
 | `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
+| `GET` | `/analytics/advanced/:sessionId` | ✅ | **New** – Returns AI‑powered analytics such as difficulty heatmaps. | `{ "heatmap": {...}, "engagementScore": 87 }` |
 
 All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.
 
