@@ -9,7 +9,7 @@
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
 [![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
 [![Docker](https://img.shields.io/badge/Docker-%20-%230db7ed?logo=docker)](https://hub.docker.com/r/quizfy)  
-[![Version](https://img.shields.io/badge/Version-1.8.1-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.8.1)  
+[![Version](https://img.shields.io/badge/Version-1.8.2-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.8.2)  
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
@@ -23,7 +23,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.8.1` (stable).  
+**Current version:** `1.8.2` (stable).  
 
 ---  
 
@@ -45,6 +45,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | **Multilingual Support** | Generate quizzes in multiple languages using the underlying LLMs. | 🧪 Experimental |
 | **AI‑Powered Quiz Analytics** | Advanced insights such as difficulty‑based heatmaps and participant engagement metrics. | 🧪 Experimental |
 | **Quiz Templates** | Pre‑defined quiz structures (e.g., True/False, Fill‑in‑the‑Blank) that can be saved and reused. | ✅ Stable |
+| **Quiz Scheduler** | Schedule quizzes to be automatically launched at a future date/time. | 🧪 Experimental |
 
 ---  
 
@@ -193,6 +194,7 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `GET` | `/analytics/advanced/:sessionId` | ✅ | Returns AI‑powered analytics such as difficulty‑based heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
 | `GET` | `/templates` | ✅ | Retrieves the list of available quiz templates. | `{ "templates": [{ "id": "tmpl1", "name": "True/False", "structure": [...] }] }` |
 | `POST` | `/templates/:id/apply` | ✅ | Applies a selected template to a new quiz draft. | `{ "draftId": "draft123", "questions": [...] }` |
+| `POST` | `/schedule` | ✅ | Schedules a quiz to be launched at a future date/time. | `{ "scheduleId": "sch789", "status": "scheduled" }` |
 
 All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.
 
@@ -295,18 +297,3 @@ We welcome contributions! Please follow these steps:
 
 ### Development Workflow  
 
-- Pull Requests must pass the CI lint and test steps.  
-- Add unit/integration tests for new functionality.  
-- Update documentation (README, inline comments) as needed.  
-
----  
-
-## License & Credits  
-
-**License:** MIT – see the [LICENSE](LICENSE) file for details.  
-
-**Authors & Contributors:**  
-- Gurudas Bhardwaj (maintainer)  
-- Additional contributors listed in the repository’s **Contributors** tab.  
-
----  
