@@ -4,27 +4,24 @@
 
 [![Vite Build](https://img.shields.io/badge/Vite-4.1.11-blue?logo=vite)](https://vitejs.dev)  
 [![React](https://img.shields.io/badge/React-19.1.0-61DAFB?logo=react)](https://reactjs.org)  
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
+[![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
-[🚀 Demo (hosted)](https://quizfy-demo.vercel.app) | [📚 Docs](#usage) | [🐞 Report a bug](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/issues)  
+[🚀 Demo (hosted)](https://quizfy-demo.vercel.app) | [📚 Docs (this file)](#usage) | [🐞 Report a bug](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/issues)  
 
 ---  
 
 ## Overview  
 
-Quizfy is a modern web application that lets educators and trainers **create AI‑generated quizzes** in seconds and **run real‑time live quiz sessions** with participants.  
-Built with React 19, Vite, and TailwindCSS, the app communicates with a backend (hosted at `https://quizidy-backend.duckdns.org`) for authentication, OpenAI‑driven question generation, and real‑time socket communication.  
-
-- **Instant AI quiz generation** – type a topic, let the AI craft questions, options, and explanations.  
-- **Live sessions** – admins control the flow, view analytics, and interact with participants via chat, polls, and rankings.  
-- **Rich visual feedback** – confetti, charts, and animated UI components keep participants engaged.  
+Quizfy is a modern web application that lets educators, corporate trainers, and event organizers **create AI‑generated quizzes in seconds** and **run real‑time live quiz sessions** with participants. Built with React 19, Vite, and TailwindCSS, the frontend talks to a Node/Express backend (hosted at `https://quizidy-backend.duckdns.org`) for authentication, OpenAI‑driven question generation, and Socket.io‑based live interaction.
 
 > **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-Current version: `0.0.0` (development).  
+**Current version:** `1.0.0` (stable).  
 
 ---  
 
@@ -41,6 +38,7 @@ Current version: `0.0.0` (development).
 | **Responsive Design** | TailwindCSS + custom fonts (Poppins) – works on desktop, tablet, and mobile. | ✅ Stable |
 | **Export / Share** | Generate shareable session links, download results as CSV. | ✅ Stable |
 | **Extensible Plugin System** | Component‑based architecture makes it easy to add new question types or visualizations. | 🧪 Experimental |
+| **AI Features Page** | Dedicated UI for exploring AI‑generated content, previewing quizzes, and editing before saving. | ✅ Stable |
 
 ---  
 
@@ -86,11 +84,11 @@ src/
 └─ style.css                       # Tailwind base imports
 ```
 
-- **AuthContext** parses JWTs, stores the access token in `localStorage`, and automatically refreshes it via `/user/token/RefreshAccessToken`.  
-- **AI_Powered_Quiz** fetches generated questions from the backend, tracks progress, shows correct/incorrect pop‑ups, and triggers confetti on success.  
-- **AdminLiveSession** (under `Components/App/Going Live Functionality`) manages the live session lifecycle, receives participant answers through Socket.io, and renders analytics (charts, rankings, polls).  
+* **AuthContext** parses JWTs, stores the access token in `localStorage`, and automatically refreshes it via `/user/token/RefreshAccessToken`.  
+* **AI_Powered_Quiz** fetches generated questions from the backend, tracks progress, shows correct/incorrect pop‑ups, and triggers confetti on success.  
+* **AdminLiveSession** (under `Components/App/Going Live Functionality`) manages the live session lifecycle, receives participant answers through Socket.io, and renders analytics (charts, rankings, polls).  
 
-All network calls are prefixed with the `BACKEND_URL` constant defined in `authContext.jsx`.  
+All network calls are prefixed with the `VITE_BACKEND_URL` constant defined in `authContext.jsx`.  
 
 ---  
 
@@ -162,7 +160,7 @@ You can also serve the `dist` folder with any static file server (NGINX, Apache,
 ### 2️⃣ Create an AI‑Generated Quiz  
 
 1. Click **“Create Quiz”** in the navigation bar.  
-2. Enter a **topic** (e.g., *“World War II”*) and optional **difficulty**.  
+2. Enter a **topic** (e.g., *“World War II”*) and optional **difficulty**.  
 3. Press **Generate** – the frontend calls the backend which forwards the request to the Google Gemini / OpenAI API.  
 4. Review the generated questions, edit if needed, and **Save**.  
 
@@ -195,16 +193,16 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 
 ---  
 
-## API Documentation (Frontend‑to‑Backend)  
+## API Documentation (Frontend → Backend)  
 
 | Method | Endpoint | Auth | Description | Example Response |
 |--------|----------|------|-------------|------------------|
-| `POST` | `/auth/login` | ❌ | Returns `accessToken` and `refreshToken`. | `{ accessToken: "...", refreshToken: "..." }` |
-| `GET` | `/user/token/RefreshAccessToken` | ✅ (cookie) | Refreshes the JWT; used automatically by `authContext`. | `{ accessToken: "..." }` |
-| `POST` | `/quiz/generate` | ✅ | Sends `{ topic, difficulty }`; returns generated questions. | `{ questions: [{ id, text, options: [...] }] }` |
-| `GET` | `/quiz/:id` | ✅ | Retrieves a saved quiz. | `{ id, title, questions: [...] }` |
-| `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ sessionId: "abc123", joinUrl: "..." }` |
-| `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ answersPerOption: {...}, avgResponseTime: 12.3 }` |
+| `POST` | `/auth/login` | ❌ | Returns `accessToken` and `refreshToken`. | `{ "accessToken": "...", "refreshToken": "..." }` |
+| `GET` | `/user/token/RefreshAccessToken` | ✅ (cookie) | Refreshes the JWT; used automatically by `authContext`. | `{ "accessToken": "..." }` |
+| `POST` | `/quiz/generate` | ✅ | Sends `{ topic, difficulty }`; returns generated questions. | `{ "questions": [{ "id": "...", "text": "...", "options": [...] }] }` |
+| `GET` | `/quiz/:id` | ✅ | Retrieves a saved quiz. | `{ "id": "...", "title": "...", "questions": [...] }` |
+| `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
+| `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
 
 All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.  
 
@@ -215,11 +213,8 @@ All requests must include the `Authorization: Bearer <accessToken>` header unles
 ### Setting Up the Development Environment  
 
 ```bash
-# Clone (already done) and install dependencies
-npm install
-
-# Run the dev server
-npm run dev
+npm install          # install deps
+npm run dev          # start Vite dev server
 ```
 
 ### Running Tests  
@@ -319,6 +314,7 @@ We welcome contributions! Please follow these steps:
 | **Socket.io connection refused** | Check that the backend’s Socket.io server is running and that the URL matches the one used in `AdminLiveSession.jsx`. |
 | **AI quiz generation returns empty** | Confirm the backend has valid OpenAI / Gemini API keys and that the request payload includes a non‑empty `topic`. |
 | **Confetti not showing** | Ensure `react-confetti` and `canvas-confetti` are installed (they are in `package.json`). No additional config needed. |
+| **Live session analytics not updating** | Make sure the admin is connected to the same Socket.io namespace as participants and that the backend emits `analytics` events. |
 
 For more help, open an issue or join the discussion in the **GitHub Discussions** tab.  
 
@@ -352,4 +348,4 @@ For more help, open an issue or join the discussion in the **GitHub Discussions*
 
 ---  
 
-*Happy quizzing! 🎉*  
+*Happy quizzing! 🎉*
