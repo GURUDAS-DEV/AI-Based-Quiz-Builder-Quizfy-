@@ -9,7 +9,7 @@
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
 [![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
 [![Docker](https://img.shields.io/badge/Docker-%20-%230db7ed?logo=docker)](https://hub.docker.com/r/quizfy)  
-[![Version](https://img.shields.io/badge/Version-1.7.0-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.7.0)  
+[![Version](https://img.shields.io/badge/Version-1.8.0-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.8.0)  
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
@@ -23,7 +23,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.7.0` (stable).  
+**Current version:** `1.8.0` (stable).  
 
 ---  
 
@@ -42,9 +42,9 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | **Export / Share** | Generate shareable session links, download results as CSV. | ✅ Stable |
 | **Extensible Plugin System** | Component‑based architecture makes it easy to add new question types or visualizations. | 🧪 Experimental |
 | **AI Features Page** | Dedicated UI for exploring AI‑generated content, previewing quizzes, and editing before saving. | ✅ Stable |
-| **Multilingual Support** *(new)* | Generate quizzes in multiple languages using the underlying LLMs. | 🧪 Experimental |
-| **AI‑Powered Quiz Analytics** *(new)* | Advanced insights such as difficulty‑based heatmaps and participant engagement metrics. | 🧪 Experimental |
-| **Quiz Templates** *(new)* | Pre‑defined quiz structures (e.g., True/False, Fill‑in‑the‑Blank) that can be saved and reused. | ✅ Stable |
+| **Multilingual Support** | Generate quizzes in multiple languages using the underlying LLMs. | 🧪 Experimental |
+| **AI‑Powered Quiz Analytics** | Advanced insights such as difficulty‑based heatmaps and participant engagement metrics. | 🧪 Experimental |
+| **Quiz Templates** | Pre‑defined quiz structures (e.g., True/False, Fill‑in‑the‑Blank) that can be saved and reused. | ✅ Stable |
 
 ---  
 
@@ -110,13 +110,11 @@ VITE_SOCKET_URL=wss://quizidy-backend.duckdns.org
 ### Running the App  
 
 ```bash
-# Development server with hot‑module replacement
 npm run dev
-# → Vite now binds to 0.0.0.0 on port 5173 (strictPort).  
-#   Open http://localhost:5173 or http://<your‑machine‑IP>:5173 from any device on the same network.
+# → Vite binds to 0.0.0.0:5173 (strictPort). Open http://localhost:5173
 ```
 
-> **Note:** Because `strictPort: true` is enabled, Vite will **fail** to start if port 5173 is already in use. Adjust the port in `vite.config.js` if you need a different value.
+> **Note:** Because `strictPort: true` is enabled, Vite will **fail** to start if port 5173 is already in use. Adjust the port in `vite.config.js` if needed.
 
 ### Building for Production  
 
@@ -125,9 +123,9 @@ npm run build          # Generates ./dist
 npm run preview        # Serves the built files locally (uses `serve`)
 ```
 
-> **Note:** The repository no longer ships pre‑built assets in `dist`. Running `npm run build` always generates a fresh, clean `dist` folder.
+> **Note:** The repository no longer ships pre‑built assets in `dist`. Running `npm run build` always generates a fresh `dist` folder.
 
-You can also serve the `dist` folder with any static file server (NGINX, Apache, Docker, Vercel, Netlify, etc.).
+You can serve `dist` with any static file server (NGINX, Apache, Docker, Vercel, Netlify, etc.).
 
 ---  
 
@@ -157,10 +155,10 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 });
 ```
 
-### 3️⃣ Use Quiz Templates *(new)*  
+### 3️⃣ Use Quiz Templates  
 
 - From the **Create Quiz** screen, select **“Use Template”** to pick a pre‑defined structure (e.g., True/False).  
-- The template populates the question list, which you can then edit or generate additional items via AI.
+- The template populates the question list, which you can edit or extend via AI.  
 
 ### 4️⃣ Run a Live Session (Admin)  
 
@@ -190,9 +188,9 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `PUT` | `/quiz/:id/review` | ✅ | Saves edits made on the **AI Quiz Review & Edit** page. | `{ "message": "Quiz updated successfully." }` |
 | `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
 | `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
-| `GET` | `/analytics/advanced/:sessionId` | ✅ | **New** – Returns AI‑powered analytics such as difficulty‑based heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
-| `GET` | `/templates` | ✅ | **New** – Retrieves the list of available quiz templates. | `{ "templates": [{ "id": "tmpl1", "name": "True/False", "structure": [...] }] }` |
-| `POST` | `/templates/:id/apply` | ✅ | **New** – Applies a selected template to a new quiz draft. | `{ "draftId": "draft123", "questions": [...] }` |
+| `GET` | `/analytics/advanced/:sessionId` | ✅ | Returns AI‑powered analytics such as difficulty‑based heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
+| `GET` | `/templates` | ✅ | Retrieves the list of available quiz templates. | `{ "templates": [{ "id": "tmpl1", "name": "True/False", "structure": [...] }] }` |
+| `POST` | `/templates/:id/apply` | ✅ | Applies a selected template to a new quiz draft. | `{ "draftId": "draft123", "questions": [...] }` |
 
 All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.
 
@@ -296,4 +294,15 @@ We welcome contributions! Please follow these steps:
 ### Development Workflow  
 
 - Pull Requests must pass the CI lint and test steps.  
-- Add unit
+- Add unit/integration tests for new functionality.  
+- Update documentation (README, inline comments) as needed.  
+
+---  
+
+## License & Credits  
+
+**License:** MIT – see the [LICENSE](LICENSE) file for details.  
+
+**Authors & Contributors:**  
+- Gurudas Bhardwaj (maintainer)  
+- Additional
