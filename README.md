@@ -2,9 +2,9 @@
 
 ![Quizfy Logo](./src/assets/Images/Logo/LOGO.png)
 
-[![Vite Build](https://img.shields.io/badge/Vite-4.1.11-blue?logo=vite)](https://vitejs.dev)  
-[![React](https://img.shields.io/badge/React-19.1.0-61DAFB?logo=react)](https://reactjs.org)  
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com)  
+[![Vite Build](https://img.shields.io/badge/Vite-4.5.0-blue?logo=vite)](https://vitejs.dev)  
+[![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)](https://reactjs.org)  
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
 [![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
@@ -22,7 +22,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.3.0` (stable).  
+**Current version:** `1.4.0` (stable).  
 
 ---  
 
