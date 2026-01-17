@@ -101,22 +101,22 @@ Create a `.env` file in the project root (Vite automatically prefixes env vars w
 # Base URL of the backend API (must be reachable from the browser)
 VITE_BACKEND_URL=https://quizidy-backend.duckdns.org
 
-# (Optional) Port for the Vite dev server
-VITE_PORT=5173
-
 # (Optional) Socket.io endpoint if it differs from the backend URL
 VITE_SOCKET_URL=wss://quizidy-backend.duckdns.org
 ```
 
-> **Tip:** The backend must allow CORS for `http://localhost:5173` (or the port you set).
+> **Tip:** The backend must allow CORS for `http://0.0.0.0:5173` (or the port you set).  
 
 ### Running the App  
 
 ```bash
 # Development server with hot‑module replacement
 npm run dev
-# → Open http://localhost:5173 in your browser
+# → Vite now binds to 0.0.0.0 on port 5173 (strictPort).  
+#   Open http://localhost:5173 or http://<your‑machine‑IP>:5173 from any device on the same network.
 ```
+
+> **Note:** Because `strictPort: true` is enabled, Vite will **fail** to start if port 5173 is already in use. Adjust the port in `vite.config.js` if you need a different value.
 
 ### Building for Production  
 
@@ -190,7 +190,7 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `PUT` | `/quiz/:id/review` | ✅ | Saves edits made on the **AI Quiz Review & Edit** page. | `{ "message": "Quiz updated successfully." }` |
 | `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
 | `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
-| `GET` | `/analytics/advanced/:sessionId` | ✅ | **New** – Returns AI‑powered analytics such as difficulty heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
+| `GET` | `/analytics/advanced/:sessionId` | ✅ | **New** – Returns AI‑powered analytics such as difficulty‑based heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
 | `GET` | `/templates` | ✅ | **New** – Retrieves the list of available quiz templates. | `{ "templates": [{ "id": "tmpl1", "name": "True/False", "structure": [...] }] }` |
 | `POST` | `/templates/:id/apply` | ✅ | **New** – Applies a selected template to a new quiz draft. | `{ "draftId": "draft123", "questions": [...] }` |
 
@@ -204,7 +204,7 @@ All requests must include the `Authorization: Bearer <accessToken>` header unles
 
 ```bash
 npm install          # install dependencies
-npm run dev          # start Vite dev server
+npm run dev          # start Vite dev server (binds to 0.0.0.0:5173)
 ```
 
 ### Testing  
@@ -276,7 +276,7 @@ The `dist` folder can be deployed to any static‑file host (Vercel, Netlify, Gi
 |----------|-------------|
 | `VITE_BACKEND_URL` | Base URL of the backend API (must be reachable from the client). |
 | `VITE_SOCKET_URL` (optional) | WebSocket endpoint for real‑time communication. |
-| `VITE_PORT` (optional) | Port for the Vite preview server (used only locally). |
+| `VITE_PORT` (optional) | **Not used** by the current Vite config; the dev server runs on port 5173 as defined in `vite.config.js`. |
 
 ---  
 
@@ -296,26 +296,4 @@ We welcome contributions! Please follow these steps:
 ### Development Workflow  
 
 - Pull Requests must pass the CI lint and test steps.  
-- Add unit/integration tests for new logic (Vitest recommended).  
-- Update the **README** if you add public‑facing features or change setup steps.  
-
-### Code Review Guidelines  
-
-- Keep components small and focused.  
-- Prefer functional components with hooks.  
-- Use TypeScript in future iterations for stronger typing.  
-- Document any new API endpoints in the **API Documentation** section.  
-
----  
-
-## License  
-
-This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.  
-
----  
-
-## Acknowledgments  
-
-- **React**, **Vite**, **TailwindCSS** – for the excellent developer experience.  
-- **OpenAI** & **Google Gemini** – powering the AI quiz generation.  
-- **Socket.io** –
+- Add unit
