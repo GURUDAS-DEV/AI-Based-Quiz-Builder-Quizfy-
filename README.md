@@ -19,11 +19,11 @@
 
 ## Overview  
 
-Quizfy is a modern web application that lets educators, corporate trainers, and event organizers **create AI‑generated quizzes in seconds** and **run real‑time live quiz sessions** with participants. The frontend is built with React 19, Vite 5, and TailwindCSS, while a Node/Express backend (hosted at `https://quizidy-backend.duckdns.org`) handles authentication, OpenAI/Gemini‑driven question generation, and Socket.io‑based live interaction.
+Quizfy is a modern web application that enables educators, corporate trainers, and event organizers to **create AI‑generated quizzes in seconds** and **run real‑time live quiz sessions** with participants. The frontend is built with **React 19**, **Vite 5**, and **TailwindCSS**, while a Node/Express backend (hosted at `https://quizidy-backend.duckdns.org`) provides authentication, OpenAI/Google Gemini‑driven question generation, and Socket.io‑based live interaction.
 
-**Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
+*Target audience*: teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.8.2` (stable).  
+*Current version*: `1.8.2` (stable).  
 
 ---  
 
@@ -69,7 +69,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 ---  
 
-## Getting Started  
+## Installation  
 
 ### Prerequisites  
 
@@ -80,7 +80,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | Git | any recent version |
 | (Optional) Docker | 20.x |
 
-### Installation  
+### Steps  
 
 ```bash
 # 1️⃣ Clone the repository
@@ -108,7 +108,7 @@ VITE_SOCKET_URL=wss://quizidy-backend.duckdns.org
 
 > **Tip:** The backend must allow CORS for `http://0.0.0.0:5173` (or the port you set).  
 
-### Running the App  
+### Running the App (development)  
 
 ```bash
 npm run dev
@@ -116,7 +116,6 @@ npm run dev
 ```
 
 > **Note:** Because `strictPort: true` is enabled, Vite will **fail** to start if port 5173 is already in use. Adjust the port in `vite.config.js` if needed.  
-> **Asset Fix:** The `base: '/'` setting added to `vite.config.js` ensures that static assets are resolved correctly both in development and when the app is deployed to a sub‑directory.
 
 ### Building for Production  
 
@@ -125,10 +124,7 @@ npm run build          # Generates ./dist
 npm run preview        # Serves the built files locally (uses `serve`)
 ```
 
-> **Note:** The repository no longer ships pre‑built assets in `dist`. Running `npm run build` always generates a fresh `dist` folder.  
-> **Base Path:** With `base: '/'` the built files can be served from the root of any static host without additional path rewrites.
-
-You can serve `dist` with any static file server (NGINX, Apache, Docker, Vercel, Netlify, etc.).
+> The repository no longer ships pre‑built assets in `dist`. Running `npm run build` always generates a fresh `dist` folder.  
 
 ---  
 
@@ -200,88 +196,6 @@ All requests must include the `Authorization: Bearer <accessToken>` header unles
 
 ---  
 
-## Development  
-
-### Setting Up the Development Environment  
-
-```bash
-npm install          # install dependencies
-npm run dev          # start Vite dev server (binds to 0.0.0.0:5173)
-```
-
-### Testing  
-
-```bash
-npm run test         # runs Vitest unit & integration tests
-npm run test:watch   # watch mode
-```
-
-### Linting & Formatting  
-
-```bash
-npm run lint         # Runs ESLint across the src folder
-npm run format       # Runs Prettier (if added)
-```
-
-### Debugging Tips  
-
-- **Network tab** – inspect API calls and verify the `Authorization` header.  
-- **JWT payload** – decode with `atob(token.split('.')[1])` (see `authContext.jsx`).  
-- **Socket.io events** – logged in `AdminLiveSession.jsx`; add `console.log` to view emitted/received messages.  
-
----  
-
-## Deployment  
-
-### Docker (multi‑stage)  
-
-```dockerfile
-# Dockerfile (place in repo root)
-
-# ---------- Builder ----------
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-ARG VITE_BACKEND_URL
-ARG VITE_SOCKET_URL
-ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
-ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
-RUN npm run build
-
-# ---------- Production ----------
-FROM nginx:stable-alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-Build & run (replace env vars with your production values):
-
-```bash
-docker build \
-  --build-arg VITE_BACKEND_URL=https://quizidy-backend.duckdns.org \
-  --build-arg VITE_SOCKET_URL=wss://quizidy-backend.duckdns.org \
-  -t quizfy .
-
-docker run -p 8080:80 quizfy
-```
-
-### Static Hosting  
-
-The `dist` folder can be deployed to any static‑file host (Vercel, Netlify, GitHub Pages, Cloudflare Pages). Ensure the `VITE_BACKEND_URL` (and optionally `VITE_SOCKET_URL`) environment variable is set in the hosting platform’s settings.
-
-### Production Environment Variables  
-
-| Variable | Description |
-|----------|-------------|
-| `VITE_BACKEND_URL` | Base URL of the backend API (must be reachable from the client). |
-| `VITE_SOCKET_URL` (optional) | WebSocket endpoint for real‑time communication. |
-| `VITE_PORT` (optional) | **Not used** by the current Vite config; the dev server runs on port 5173 as defined in `vite.config.js`. |
-
----  
-
 ## Contributing  
 
 We welcome contributions! Please follow these steps:
@@ -297,3 +211,46 @@ We welcome contributions! Please follow these steps:
 
 ### Development Workflow  
 
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests
+npm run test
+
+# Lint code
+npm run lint
+```
+
+### Code Style  
+
+- **ESLint** + **Prettier** are enforced.  
+- Use functional components and React Hooks.  
+- Keep JSX tidy; extract reusable UI pieces into the `src/Components/` folder.  
+
+### Debugging Tips  
+
+- **Network tab** – inspect API calls and verify the `Authorization` header.  
+- **JWT payload** – decode with `atob(token.split('.')[1])` (see `authContext.jsx`).  
+- **Socket.io events** – logged in `AdminLiveSession.jsx`; add `console.log` to view emitted/received messages.  
+
+---  
+
+## License & Credits  
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.  
+
+**Contributors**  
+
+- Gurudas Bhardwaj – Project lead & core development  
+- (Add additional contributors as they join)  
+
+**Acknowledgments**  
+
+- OpenAI & Google Gemini for the underlying language models.  
+- The React, Vite, and TailwindCSS communities for excellent tooling.  
+
+---  
