@@ -17,11 +17,11 @@
 
 ## Overview  
 
-Quizfy is a modern web application that lets educators, corporate trainers, and event organizers **create AI‑generated quizzes in seconds** and **run real‑time live quiz sessions** with participants. Built with React 19, Vite, and TailwindCSS, the frontend talks to a Node/Express backend (hosted at `https://quizidy-backend.duckdns.org`) for authentication, OpenAI‑driven question generation, and Socket.io‑based live interaction.
+Quizfy is a modern web application that lets educators, corporate trainers, and event organizers **create AI‑generated quizzes in seconds** and **run real‑time live quiz sessions** with participants. The frontend is built with React 19, Vite, and TailwindCSS, while a Node/Express backend (hosted at `https://quizidy-backend.duckdns.org`) handles authentication, OpenAI/Gemini‑driven question generation, and Socket.io‑based live interaction.
 
-> **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
+**Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.1.0` (stable).  
+**Current version:** `1.2.0` (stable).  
 
 ---  
 
@@ -46,52 +46,18 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| **Framework** | React 19 (with `react-router@7`) | UI rendering and routing |
-| **Bundler / Dev Server** | Vite 7 | Lightning‑fast HMR and build |
+| **Framework** | React 19 (`react-router@7`) | UI rendering & routing |
+| **Bundler / Dev Server** | Vite 7 | Fast HMR & production builds |
 | **Styling** | TailwindCSS 4, PostCSS, Autoprefixer | Utility‑first responsive design |
 | **Icons** | `lucide-react`, `react-icons`, `@flaticon/flaticon-uicons` | Consistent SVG icon set |
 | **AI** | `@google/genai`, `openai` | Generate quiz content |
-| **Real‑time** | `socket.io-client` | Bi‑directional communication for live sessions |
+| **Real‑time** | `socket.io-client` | Live session communication |
 | **State Management** | React Context (`authContext.jsx`) | Auth state & user info |
 | **Charts & Visuals** | `chart.js`, `react-confetti`, `canvas-confetti` | Data visualisation & celebration effects |
 | **Backend (external)** | Node/Express (hosted at `quizidy-backend.duckdns.org`) | Auth, token refresh, quiz generation, Redis cache |
-| **Cache / PubSub** | `redis` (used by backend) | Fast session state sharing |
+| **Cache / PubSub** | `redis` (backend) | Fast session state sharing |
 | **Testing / Linting** | ESLint (`@eslint/js`, `eslint-plugin-react-hooks`) | Code quality |
 | **Deployment** | `serve`, Docker (optional) | Production static serving |
-
----  
-
-## Architecture  
-
-```
-src/
-├─ assets/                # Images, fonts, logos
-├─ Components/            # Feature‑specific UI
-│   ├─ AI_Features_page/          # AI quiz creation & preview
-│   │   └─ AI_Powered_Quiz.jsx
-│   ├─ App/                       # Core app logic (including live‑session UI)
-│   │   ├─ AdminLiveSession.jsx   # Admin live‑session controls & analytics
-│   │   └─ ...                    # Other high‑level pages
-│   ├─ Authentications/           # Login / Register pages
-│   ├─ Footer/
-│   ├─ Landing/
-│   ├─ Loader/
-│   ├─ Messages/
-│   ├─ Navbar/
-│   ├─ Protected_Route/           # Route guard based on auth
-│   └─ User/                      # Profile & user‑specific components
-├─ Context/
-│   └─ authContext.jsx            # JWT handling, token refresh
-├─ Layout.jsx                     # Global layout wrapper
-├─ main.jsx                       # App entry point (ReactDOM.createRoot)
-└─ style.css                      # Tailwind base imports
-```
-
-* **AuthContext** parses JWTs, stores the access token in `localStorage`, and automatically refreshes it via `/user/token/RefreshAccessToken`.  
-* **AI_Powered_Quiz** fetches generated questions from the backend, tracks progress, shows correct/incorrect pop‑ups, and triggers confetti on success.  
-* **AdminLiveSession** (under `Components/App/`) manages the live session lifecycle, receives participant answers through Socket.io, and renders analytics (charts, rankings, polls).  
-
-All network calls are prefixed with the `VITE_BACKEND_URL` constant defined in `authContext.jsx`.  
 
 ---  
 
@@ -125,14 +91,14 @@ npm i -g vite
 Create a `.env` file in the project root (Vite automatically prefixes env vars with `VITE_`):
 
 ```dotenv
-# URL of the backend API (must be reachable from the browser)
+# Base URL of the backend API (must be reachable from the browser)
 VITE_BACKEND_URL=https://quizidy-backend.duckdns.org
 
 # (Optional) Port for the Vite dev server
 VITE_PORT=5173
 ```
 
-> **Note:** The backend must have CORS configured for `http://localhost:5173` (or your chosen dev URL).
+> **Tip:** The backend must allow CORS for `http://localhost:5173` (or the port you set).
 
 ### Running the App  
 
@@ -158,17 +124,17 @@ You can also serve the `dist` folder with any static file server (NGINX, Apache,
 ### 1️⃣ Sign‑up / Login  
 
 - Navigate to **/login** or **/register**.  
-- After successful login, a JWT is stored in `localStorage` and the UI updates to the authenticated state.  
+- After a successful login, a JWT is stored in `localStorage` and the UI updates to the authenticated state.  
 
 ### 2️⃣ Create an AI‑Generated Quiz  
 
 1. Click **“Create Quiz”** in the navigation bar.  
 2. Enter a **topic** (e.g., *“World War II”*) and optional **difficulty**.  
-3. Press **Generate** – the frontend calls the backend which forwards the request to the Google Gemini / OpenAI API.  
+3. Press **Generate** – the frontend calls the backend, which forwards the request to the Google Gemini / OpenAI API.  
 4. Review the generated questions, edit if needed, and **Save**.  
 
 ```jsx
-// Example request (handled inside AI_Powered_Quiz.jsx)
+// Inside src/Components/AI_Features_page/AI_Powered_Quiz.jsx
 await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
   method: "POST",
   headers: {
@@ -207,7 +173,7 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
 | `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
 
-All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.  
+All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.
 
 ---  
 
@@ -216,29 +182,23 @@ All requests must include the `Authorization: Bearer <accessToken>` header unles
 ### Setting Up the Development Environment  
 
 ```bash
-npm install          # install deps
+npm install          # install dependencies
 npm run dev          # start Vite dev server
 ```
 
-### Running Tests  
-
-> The repository currently contains only linting rules. Add Jest / Vitest tests as needed.
+### Linting & Formatting  
 
 ```bash
 npm run lint   # Runs ESLint across the src folder
+# If Prettier is added, you can run:
+npm run format
 ```
-
-### Code Style  
-
-- **ESLint** is configured with `eslint.config.js`.  
-- Follow the **Airbnb React** style guide (via `eslint-plugin-react-hooks`).  
-- Use **Prettier** (if added) for consistent formatting.  
 
 ### Debugging Tips  
 
-- Open the browser devtools → **Network** tab to inspect API calls.  
-- JWT payload can be decoded with `atob(token.split('.')[1])` (see `authContext.jsx`).  
-- Socket.io events are logged in `AdminLiveSession.jsx`; use `console.log` to view emitted/received messages.  
+- **Network tab** – inspect API calls and verify the `Authorization` header.  
+- **JWT payload** – decode with `atob(token.split('.')[1])` (see `authContext.jsx`).  
+- **Socket.io events** – logged in `AdminLiveSession.jsx`; add `console.log` to view emitted/received messages.  
 
 ---  
 
@@ -270,9 +230,9 @@ docker run -p 8080:80 quizfy
 
 ### Static Hosting  
 
-The `dist` folder can be deployed to any static‑file host (Vercel, Netlify, GitHub Pages, Cloudflare Pages). Ensure the `VITE_BACKEND_URL` environment variable is set in the hosting platform’s settings.  
+The `dist` folder can be deployed to any static‑file host (Vercel, Netlify, GitHub Pages, Cloudflare Pages). Ensure the `VITE_BACKEND_URL` environment variable is set in the hosting platform’s settings.
 
-### Environment Variables for Production  
+### Production Environment Variables  
 
 | Variable | Description |
 |----------|-------------|
@@ -295,8 +255,8 @@ We welcome contributions! Please follow these steps:
 
 ### Development Workflow  
 
-- **Pull Requests** must pass the CI lint step.  
-- Include **unit/integration tests** for new logic (Jest/Vitest recommended).  
+- Pull Requests must pass the CI lint step.  
+- Add unit/integration tests for new logic (Jest/Vitest recommended).  
 - Update the **README** if you add public‑facing features or change setup steps.  
 
 ### Code Review Guidelines  
@@ -308,19 +268,15 @@ We welcome contributions! Please follow these steps:
 
 ---  
 
-## Troubleshooting & FAQ  
+## License  
 
-| Issue | Solution |
-|-------|----------|
-| **App fails to start (`vite` error)** | Ensure Node ≥ 18 is installed. Delete `node_modules` and run `npm install` again. |
-| **Authentication errors** | Verify `VITE_BACKEND_URL` points to the correct backend and that the backend CORS settings allow your origin. |
-| **Socket.io connection refused** | Check that the backend’s Socket.io server is running and that the URL matches the one used in `AdminLiveSession.jsx`. |
-| **AI quiz generation returns empty** | Confirm the backend has valid OpenAI / Gemini API keys and that the request payload includes a non‑empty `topic`. |
-| **Confetti not showing** | Ensure `react-confetti` and `canvas-confetti` are installed (they are in `package.json`). No additional config needed. |
-| **Live session analytics not updating** | Make sure the admin is connected to the same Socket.io namespace as participants and that the backend emits `analytics` events. |
-
-For more help, open an issue or join the discussion in the **GitHub Discussions** tab.  
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.  
 
 ---  
 
-##
+## Acknowledgments  
+
+- **React**, **Vite**, **TailwindCSS** – for the excellent developer experience.  
+- **OpenAI** & **Google Gemini** – powering the AI quiz generation.  
+- **Socket.io** – enabling real‑time live sessions.  
+- All contributors who have helped shape Quizfy.  
