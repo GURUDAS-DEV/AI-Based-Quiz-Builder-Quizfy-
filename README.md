@@ -9,7 +9,7 @@
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
 [![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
 [![Docker](https://img.shields.io/badge/Docker-%20-%230db7ed?logo=docker)](https://hub.docker.com/r/quizfy)  
-[![Version](https://img.shields.io/badge/Version-1.8.0-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.8.0)  
+[![Version](https://img.shields.io/badge/Version-1.8.1-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.8.1)  
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
@@ -23,7 +23,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.8.0` (stable).  
+**Current version:** `1.8.1` (stable).  
 
 ---  
 
@@ -307,4 +307,6 @@ We welcome contributions! Please follow these steps:
 
 **Authors & Contributors:**  
 - Gurudas Bhardwaj (maintainer)  
-- Additional  
+- Additional contributors listed in the repository’s **Contributors** tab.  
+
+---  
