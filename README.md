@@ -22,7 +22,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.4.0` (stable).  
+**Current version:** `1.5.0` (stable).  
 
 ---  
 
@@ -31,7 +31,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | Feature | Description | Status |
 |---------|-------------|--------|
 | **AI‑Generated Quiz** | Uses Google Gemini / OpenAI to generate questions, multiple‑choice options, and detailed explanations. | ✅ Stable |
-| **AI Quiz Review & Edit** | New page that lets admins preview, edit, and reorder generated questions before saving. | ✅ Stable |
+| **AI Quiz Review & Edit** | UI for admins to preview, edit, reorder, and enrich generated questions before saving. | ✅ Stable |
 | **User Authentication** | JWT‑based login, automatic token refresh, role‑based UI (admin vs participant). | ✅ Stable |
 | **Live Quiz Sessions** | Admin can start/stop a session, broadcast questions, and receive answers in real time via Socket.io. | ✅ Stable |
 | **Participant Interaction** | Chat, polls, rankings, and a “raise hand” feature for Q&A. | ✅ Stable |
@@ -41,6 +41,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | **Export / Share** | Generate shareable session links, download results as CSV. | ✅ Stable |
 | **Extensible Plugin System** | Component‑based architecture makes it easy to add new question types or visualizations. | 🧪 Experimental |
 | **AI Features Page** | Dedicated UI for exploring AI‑generated content, previewing quizzes, and editing before saving. | ✅ Stable |
+| **Multilingual Support** *(new)* | Generate quizzes in multiple languages using the underlying LLMs. | 🧪 Experimental |
 
 ---  
 
