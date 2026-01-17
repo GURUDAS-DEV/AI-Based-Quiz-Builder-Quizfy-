@@ -9,7 +9,7 @@
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
 [![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
 [![Docker](https://img.shields.io/badge/Docker-%20-%230db7ed?logo=docker)](https://hub.docker.com/r/quizfy)  
-[![Version](https://img.shields.io/badge/Version-1.10.0-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.10.0)  
+[![Version](https://img.shields.io/badge/Version-1.11.0-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.11.0)  
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
@@ -23,7 +23,7 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 
 *Target audience*: teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-*Current version*: `1.10.0` (stable).  
+*Current version*: `1.11.0` (stable).  
 
 ---  
 
@@ -33,6 +33,7 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 |---------|-------------|--------|
 | **AI‑Generated Quiz** | Uses Google Gemini / OpenAI to generate questions, multiple‑choice options, and detailed explanations. | ✅ Stable |
 | **AI Quiz Review & Edit** | UI for admins to preview, edit, reorder, and enrich generated questions before saving. | ✅ Stable |
+| **AI‑Generated Hints** *(new)* | Auto‑creates helpful hints for each question to aid participants during live sessions. | ✅ Stable |
 | **User Authentication** | JWT‑based login, automatic token refresh, role‑based UI (admin vs participant). | ✅ Stable |
 | **Live Quiz Sessions** | Admin can start/stop a session, broadcast questions, and receive answers in real time via Socket.io. | ✅ Stable |
 | **Participant Interaction** | Chat, polls, rankings, and a “raise hand” feature for Q&A. | ✅ Stable |
@@ -46,7 +47,7 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 | **AI‑Powered Quiz Analytics** | Advanced insights such as difficulty‑based heatmaps and participant engagement metrics. | 🧪 Experimental |
 | **Quiz Templates** | Pre‑defined quiz structures (e.g., True/False, Fill‑in‑the‑Blank) that can be saved and reused. | ✅ Stable |
 | **Quiz Scheduler** | Schedule quizzes to be automatically launched at a future date/time. | ✅ Stable |
-| **Quiz Scheduler – Recurring Sessions** | Ability to set recurring (daily/weekly) sessions – **now stable** in v1.10.0. | ✅ Stable |
+| **Quiz Scheduler – Recurring Sessions** | Ability to set recurring (daily/weekly) sessions – now stable in v1.11.0. | ✅ Stable |
 | **AI‑Generated Explanations** | Auto‑generate detailed answer explanations for each question. | ✅ Stable |
 
 ---  
@@ -59,7 +60,7 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 | **Bundler / Dev Server** | Vite 5.2 | Fast HMR & production builds |
 | **Styling** | TailwindCSS 4, PostCSS, Autoprefixer | Utility‑first responsive design |
 | **Icons** | `lucide-react`, `react-icons`, `@flaticon/flaticon-uicons` | Consistent SVG icon set |
-| **AI** | `@google/genai`, `openai` | Generate quiz content |
+| **AI** | `@google/genai`, `openai` | Generate quiz content & hints |
 | **Real‑time** | `socket.io-client` | Live session communication |
 | **State Management** | React Context (`authContext.jsx`) | Auth state & user info |
 | **Charts & Visuals** | `chart.js`, `react-confetti`, `canvas-confetti` | Data visualisation & celebration effects |
@@ -111,7 +112,7 @@ VITE_SOCKET_IO_URL=https://quizidy-backend.duckdns.org
 VITE_API_TIMEOUT=15000
 ```
 
-> **Note**: The backend URL and API keys are mandatory for AI‑generated content and live sessions.
+> **Note**: The backend URL and API keys are mandatory for AI‑generated content, hints, and live sessions.
 
 ---  
 
@@ -175,7 +176,7 @@ The app will be available at `http://localhost:3000` (or the port shown in the c
 ```
 src/
 ├── Components/
-│   ├── AI_Features_page/      # AI generation UI
+│   ├── AI_Features_page/      # AI generation UI (now includes hints)
 │   ├── Authentications/       # Login / Register flows
 │   ├── Footer/
 │   ├── Landing/
@@ -206,7 +207,7 @@ A multi‑stage Dockerfile is included in the repository.
 
 ```bash
 # Build the Docker image
-docker build -t quizfy:1.10.0 .
+docker build -t quizfy:1.11.0 .
 
 # Run the container
 docker run -d -p 8080:80 --name quizfy \
@@ -214,7 +215,7 @@ docker run -d -p 8080:80 --name quizfy \
   -e VITE_OPENAI_API_KEY=your-openai-key \
   -e VITE_GOOGLE_GEMINI_API_KEY=your-gemini-key \
   -e VITE_SOCKET_IO_URL=https://quizidy-backend.duckdns.org \
-  quizfy:1.10.0
+  quizfy:1.11.0
 ```
 
 The container serves the static files from `dist/` using an Nginx server (configured in the Dockerfile). The app will be reachable at `http://localhost:8080`.
@@ -241,14 +242,15 @@ Quizfy’s **frontend** communicates with a separate backend service (`https://q
 |--------|----------|-------------|------|
 | `POST` | `/api/auth/login` | Returns JWT access & refresh tokens. | ❌ |
 | `POST` | `/api/auth/register` | Creates a new user account. | ❌ |
-| `GET` | `/api/quizzes/generate` | Generates a quiz using the selected LLM. Query params: `topic`, `language`, `numQuestions`. | ✅ |
+| `GET` | `/api/quizzes/generate` | Generates a quiz (and optional hints) using the selected LLM. Query params: `topic`, `language`, `numQuestions`, `includeHints`. | ✅ |
 | `POST` | `/api/quizzes` | Persists a generated or manually created quiz. | ✅ |
-| `GET` | `/api/quizzes/:id` | Retrieves a quiz definition (questions, options, explanations). | ✅ |
+| `GET` | `/api/quizzes/:id` | Retrieves a quiz definition (questions, options, explanations, hints). | ✅ |
 | `POST` | `/api/sessions/start` | Starts a live session for a given quiz ID. Returns a session token. | ✅ |
 | `POST` | `/api/sessions/:sessionId/answer` | Submits a participant’s answer. | ✅ |
 | `GET` | `/api/sessions/:sessionId/results` | Fetches real‑time results for the admin dashboard. | ✅ |
 | `POST` | `/api/sessions/:sessionId/raise-hand` | Participant raises hand for Q&A. | ✅ |
 | `GET` | `/api/sessions/:sessionId/participants` | Lists participants and their statuses. | ✅ |
+| `GET` | `/api/sessions/:sessionId/hints` | Retrieves generated hints for the current question (new endpoint). | ✅ |
 
 **Authentication** – All protected routes require an `Authorization: Bearer <access_token>` header. Tokens are refreshed automatically by the frontend using the `/api/auth/refresh` endpoint.
 
@@ -297,8 +299,15 @@ We welcome contributions! Please follow these steps:
 | **Cannot connect to backend** | Verify that `VITE_BACKEND_URL` points to a reachable server and that CORS is enabled on the backend. |
 | **AI generation returns 401** | Ensure your OpenAI / Google Gemini API keys are valid and correctly set in `.env`. |
 | **Live session not updating** | Check that the Socket.io client can reach the backend (`VITE_SOCKET_IO_URL`). Open the browser console for connection errors. |
+| **Hints not appearing** | Confirm you are calling the `/api/quizzes/generate` endpoint with `includeHints=true` and that the backend version supports hints (v1.11.0+). |
 | **Build fails with “module not found”** | Run `npm install` again to refresh the lockfile, then `npm run build`. |
 | **Docker container returns 404** | Confirm that the `dist/` folder exists (run `npm run build` before building the image). |
 | **Environment variable `VITE_API_TIMEOUT` ignored** | Restart the dev server after changing `.env` values (`npm run dev`). |
 
-For additional help, open an issue or join the discussion in the **#questions** channel of
+For additional help, open an issue or join the discussion in the **#questions** channel of the repository.
+
+---  
+
+## License & Credits  
+
+**License:** MIT – see the [LICENSE](LICENSE) file
