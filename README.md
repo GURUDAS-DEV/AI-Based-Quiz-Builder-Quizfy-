@@ -114,7 +114,8 @@ npm run dev
 # → Vite binds to 0.0.0.0:5173 (strictPort). Open http://localhost:5173
 ```
 
-> **Note:** Because `strictPort: true` is enabled, Vite will **fail** to start if port 5173 is already in use. Adjust the port in `vite.config.js` if needed.
+> **Note:** Because `strictPort: true` is enabled, Vite will **fail** to start if port 5173 is already in use. Adjust the port in `vite.config.js` if needed.  
+> **Asset Fix:** The `base: '/'` setting added to `vite.config.js` ensures that static assets are resolved correctly both in development and when the app is deployed to a sub‑directory.
 
 ### Building for Production  
 
@@ -123,7 +124,8 @@ npm run build          # Generates ./dist
 npm run preview        # Serves the built files locally (uses `serve`)
 ```
 
-> **Note:** The repository no longer ships pre‑built assets in `dist`. Running `npm run build` always generates a fresh `dist` folder.
+> **Note:** The repository no longer ships pre‑built assets in `dist`. Running `npm run build` always generates a fresh `dist` folder.  
+> **Base Path:** With `base: '/'` the built files can be served from the root of any static host without additional path rewrites.
 
 You can serve `dist` with any static file server (NGINX, Apache, Docker, Vercel, Netlify, etc.).
 
@@ -305,4 +307,4 @@ We welcome contributions! Please follow these steps:
 
 **Authors & Contributors:**  
 - Gurudas Bhardwaj (maintainer)  
-- Additional
+- Additional  
