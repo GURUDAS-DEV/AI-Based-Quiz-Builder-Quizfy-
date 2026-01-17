@@ -23,7 +23,7 @@ const Navbar = () => {
             <NavLink className={({isActive})=>isActive?"text-indigo-500":"text-black"} to="/HowToUse">How To Use</NavLink>
             <NavLink className={({isActive})=>isActive?"text-indigo-500":"text-black"} to="/Billing">Pricing</NavLink>
             <NavLink className={({isActive})=>isActive?"text-indigo-500":"text-black"} to="/AboutUs">About Us</NavLink>
-            <NavLink className={({isActive})=>isActive?"text-indigo-500":"text-black"} to="/ReadMe">ReadMe</NavLink>
+            <NavLink className={({isActive})=>isActive?"text-indigo-500":"text-black"} to="https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/blob/master/README.md" target='_main'>ReadMe</NavLink>
           </div>
         </div>
         <div className='flex gap-10'>

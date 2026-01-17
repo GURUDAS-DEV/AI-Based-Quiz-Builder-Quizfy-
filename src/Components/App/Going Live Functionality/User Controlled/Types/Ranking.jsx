@@ -29,7 +29,7 @@ const Ranking = ({ currentQuestion, showRespInPercen }) => {
     return (
         <section className="h-full w-full flex justify-center">
             <div className="w-full h-auto flex flex-col mt-6 items-center">
-                <div className={`h-[100%] bg-cover bg-center ${designTemplate} w-[100%] sm:w-[72%] text-white`}>
+                <div className={`h-[100%] bg-cover bg-center ${designTemplate} w-[100%] sm:w-[90%] text-white`}>
                     <div className="w-full text-black font-Outfit text-2xl pt-7 pl-7">
                         <h1>Q) {localQuestion}</h1>
                     </div>

@@ -1,4 +1,4 @@
-import { BadgePercent, Ban, BinaryIcon, ChartColumn, Cog, Donut, ExternalLink, Image, Lightbulb, MessageCircle, MessageCircleMore, PencilLine, Share, Timer, User, Users } from 'lucide-react'
+import { BadgePercent, Ban, BinaryIcon, ChartColumn, Cog, Donut, ExternalLink, Image, Lightbulb, MessageCircle, MessageCircleMore, PencilLine,  Timer, User, Users } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { IoMdArrowRoundBack, IoMdArrowRoundForward } from 'react-icons/io'
 import { NavLink, useNavigate, useParams } from 'react-router'
@@ -7,6 +7,7 @@ import { FaExclamationTriangle } from 'react-icons/fa'
 import PopUp from './Pop ups/PopUp'
 import CommentSection from './Pop ups/CommentSection'
 import ParticipantResponse from './Pop ups/ParticipantResponse'
+import DetailedResponse from './Pop ups/DetailedResponse'
 import Poll from './Types/Poll'
 import { io } from "socket.io-client"
 import Ranking from './Types/Ranking'
@@ -53,6 +54,8 @@ const AdminLiveSession = () => {
   const [showOptions, setShowOptions] = useState(false);
   const [showCommentSection, setShowCommentSection] = useState(false);
   const [showParticipant, setShowParticipant] = useState(false);
+  const [showDetailedResponse, setShowDetailedResponse] = useState(false);
+  const [showPercentageHover, setShowPercentageHover] = useState(false);
 
   const [showPercentage, setShowPercentage] = useState(false);
 
@@ -376,46 +379,32 @@ const AdminLiveSession = () => {
             className='cursor-pointer relative bg-white p-3 rounded-full'
           >
             <div className='absolute top-0 left-[30%]'>
-              <PopUp isVisible={currentParticipant} value={"Participant responded"} />
+              <PopUp isVisible={currentParticipant} value={"Participant List"} />
             </div>
-            <Users onClick={() => { setShowCommentSection(false); setShowParticipant(!showParticipant) }} className='' size={24} />
+            <Users onClick={() => { setShowCommentSection(false); setShowDetailedResponse(false); setShowParticipant(!showParticipant) }} className='' size={24} />
           </div>
-          {
-            showPercentage ?
-              <div
-                onMouseEnter={() => setComment(true)}
-                onMouseLeave={() => setComment(false)}
-                onClick={() => setShowPercentage(!showPercentage)}
-                className='cursor-pointer relative  bg-white p-3 rounded-full'
-              >
-                <div className='absolute top-0 left-[30%]'>
-                  <PopUp isVisible={comment} value={"Show Response in Number"} />
-                </div>
-                <BinaryIcon className='transition-all duration-500 ease-in-out' size={24} />
-              </div> :
-              <div
-                onMouseEnter={() => setComment(true)}
-                onMouseLeave={() => setComment(false)}
-                onClick={() => setShowPercentage(!showPercentage)}
-                className='cursor-pointer relative  bg-white p-3 rounded-full'
-              >
-                <div className='absolute top-0 left-[30%]'>
-                  <PopUp isVisible={comment} value={"Show Response in Percentage"} />
-                </div>
-                <BadgePercent className='transition-all duration-500 ease-in-out' size={24} />
-              </div>
-          }
-
-
-          <div onMouseEnter={() => setAnalytics(true)}
-            onMouseLeave={() => setAnalytics(false)}
-            className='cursor-pointer relative  bg-white p-3 rounded-full'
+          <div
+            onMouseEnter={() => setComment(true)}
+            onMouseLeave={() => setComment(false)}
+            className='cursor-pointer relative bg-white p-3 rounded-full'
           >
             <div className='absolute top-0 left-[30%]'>
-              <PopUp isVisible={analytics} value={"View Full Analytics"} />
+              <PopUp isVisible={comment} value={"Detailed Responses"} />
             </div>
-            <ChartColumn size={24} />
+            <ChartColumn onClick={() => { setShowCommentSection(false); setShowParticipant(false); setShowDetailedResponse(!showDetailedResponse) }} size={24} />
           </div>
+          <div
+            className='cursor-pointer relative  bg-white p-3 rounded-full'
+            onMouseEnter={() => setOpenComment(true)}
+            onMouseLeave={() => setOpenComment(false)}
+            onClick={() => { setShowDetailedResponse(false); setShowParticipant(false); setShowCommentSection(!showCommentSection) }}
+          >
+            <div className='absolute top-0 left-[30%]'>
+              <PopUp isVisible={openComment} value={"Open Comment Section"} />
+            </div>
+            <MessageCircleMore size={24} />
+          </div>
+          
           <div className='flex flex-col md:flex-row h-full justify-center items-center gap-2'>
             <div
               onClick={handlePrevQuestion}
@@ -431,7 +420,7 @@ const AdminLiveSession = () => {
               onMouseEnter={() => setShareLink(true)}
               onMouseLeave={() => setShareLink(false)}
               onClick={() => setShareLinkPopUp(true)}
-              className=' relative bg-amber-100 border flex justify-center items-center  cursor-pointer border-amber-400    p-3 rounded-full'>
+              className=' relative bg-amber-100 border flex justify-center items-center  cursor-pointer border-amber-400 p-3 rounded-full'>
               <div className='absolute top-1 flex left-2'>
                 <PopUp isVisible={shareLink} value={"Share the Link to all"} />
               </div>
@@ -447,6 +436,31 @@ const AdminLiveSession = () => {
               <IoMdArrowRoundForward className='text-lg  cursor-pointer' />
             </div>
           </div>
+          {
+            showPercentage ?
+              <div
+                onMouseEnter={() => setShowPercentageHover(true)}
+                onMouseLeave={() => setShowPercentageHover(false)}
+                onClick={() => setShowPercentage(!showPercentage)}
+                className='cursor-pointer relative  bg-white p-3 rounded-full'
+              >
+                <div className='absolute top-0 left-[30%]'>
+                  <PopUp isVisible={showPercentageHover} value={"Show Response in Number"} />
+                </div>
+                <BinaryIcon className='transition-all duration-500 ease-in-out' size={24} />
+              </div> :
+              <div
+                onMouseEnter={() => setShowPercentageHover(true)}
+                onMouseLeave={() => setShowPercentageHover(false)}
+                onClick={() => setShowPercentage(!showPercentage)}
+                className='cursor-pointer relative  bg-white p-3 rounded-full'
+              >
+                <div className='absolute top-0 left-[30%]'>
+                  <PopUp isVisible={showPercentageHover} value={"Show Response in Percentage"} />
+                </div>
+                <BadgePercent className='transition-all duration-500 ease-in-out' size={24} />
+              </div>
+          }
           {/* Timer Icon with Hover Tooltip */}
           <div
             className={`cursor-pointer   relative  bg-white p-3 rounded-full`}
@@ -473,17 +487,7 @@ const AdminLiveSession = () => {
             <Image size={24} />
           </div>
 
-          <div
-            className='cursor-pointer relative  bg-white p-3 rounded-full'
-            onMouseEnter={() => setOpenComment(true)}
-            onMouseLeave={() => setOpenComment(false)}
-            onClick={() => { setShowCommentSection(!showCommentSection); setShowParticipant(false) }}
-          >
-            <div className='absolute top-0 left-[30%]'>
-              <PopUp isVisible={openComment} value={"Open Comment Section"} />
-            </div>
-            <MessageCircleMore size={24} />
-          </div>
+
 
         </div>
       </div>
@@ -497,14 +501,19 @@ const AdminLiveSession = () => {
           commentList={commentList}
         />
       </div>
+      <div className={`absolute  bottom-2 right-4 transition-all ease-in-out duration-500  ${showDetailedResponse ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3  pointer-events-none'}`}>
+        <DetailedResponse
+          isVisible={showDetailedResponse}
+          onClose={() => setShowDetailedResponse(false)}
+          participantResponses={participantResponses}
+        />
+      </div>
       <div className={`absolute  bottom-2 right-4 transition-all ease-in-out duration-500  ${showParticipant ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3  pointer-events-none'}`}>
         <ParticipantResponse
           isVisible={showParticipant}
           onClose={() => setShowParticipant(false)}
           participantList={participantList}
-          participantResponses={participantResponses} // pass the live log
         />
-
       </div>
       <div className={`absolute bottom-2 right-4 transition-all ease-in-out duration-500 ${imageDispay ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3  pointer-events-none'}`}>
         <ImagePreviewer image={currentQuestion?.Image} onClose={() => setImageDisplay(false)} // pass the live log

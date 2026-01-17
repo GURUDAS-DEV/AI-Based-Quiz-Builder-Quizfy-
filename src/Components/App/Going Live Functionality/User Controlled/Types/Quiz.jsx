@@ -6,6 +6,11 @@ const Quiz = ({ currentQuestion, showRespInPercen }) => {
     const [localQuestion, setLocalQuestion] = useState(currentQuestion?.question || "");
     const [localOptions, setLocalOptions] = useState(currentQuestion?.options || []);
 
+    const truncateText = (text, maxLength) => {
+        if (text.length <= maxLength) return text;
+        return text.slice(0, maxLength) + '...';
+    }
+
     useEffect(() => {
         if (currentQuestion) {
             setDesignTemplate(currentQuestion.designTemplate || "");
@@ -29,7 +34,7 @@ const Quiz = ({ currentQuestion, showRespInPercen }) => {
     return (
         <section className="h-full w-full flex justify-center">
             <div className="w-full h-auto flex flex-col mt-6 items-center">
-                <div className={`h-[96%] bg-cover bg-center ${designTemplate} w-[97%] sm:w-[88%] md:w-[80%] lg:w-[72%] text-white`}>
+                <div className={`h-[96%] bg-cover bg-center ${designTemplate} w-[97%]  text-white`}>
                     <div className="w-full h-[20%] text-black font-Outfit text-2xl pt-7 pl-7">
                         <h1>Q) {localQuestion}</h1>
                     </div>
@@ -49,7 +54,7 @@ const Quiz = ({ currentQuestion, showRespInPercen }) => {
                                     ></div>
                                     <div className='flex w-full justify-center items-center flex-col gap-1'>
                                         <div className={`w-[99%] md:w-[80%] mt-1 text-center text-white text-sm bg-black flex justify-center items-center`}>
-                                            <p className="inline">{key.text}</p>
+                                            <p className="inline">{truncateText(key.text, 26)}</p>
                                         </div>
                                         <div className=' flex justify-center items-center'>
                                             <p className={`text-sm ${key.answer ? "bg-green-500" : "bg-red-500"} font-Outfit text-white bg-black pl-2 pr-2`}>{key.answer ? "Correct" : "Incorrect"}</p>

@@ -393,7 +393,7 @@ const AdminUserControlledLanding = () => {
         </div>
 
         {/* Main question display */}
-        <div className="w-[98%] ml-2 md:ml-0 md:w-[73%] h-[600px] flex justify-center items-center">
+        <div className="w-[98%] ml-2 md:ml-0 md:w-[90 %] h-[600px] flex justify-center items-center">
           {currentQuestion == null ? (
             <div className="w-full cursor-pointer relative h-[550px] flex justify-center items-center border-2 bg-stone-200 border-gray-500 border-dashed">
               <div className="absolute top-4 right-4">
