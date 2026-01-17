@@ -9,6 +9,7 @@
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
 [![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
 [![Docker](https://img.shields.io/badge/Docker-%20-%230db7ed?logo=docker)](https://hub.docker.com/r/quizfy)  
+[![Version](https://img.shields.io/badge/Version-1.7.0-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.7.0)  
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
@@ -22,7 +23,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.6.0` (stable).  
+**Current version:** `1.7.0` (stable).  
 
 ---  
 
@@ -43,6 +44,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | **AI Features Page** | Dedicated UI for exploring AI‑generated content, previewing quizzes, and editing before saving. | ✅ Stable |
 | **Multilingual Support** *(new)* | Generate quizzes in multiple languages using the underlying LLMs. | 🧪 Experimental |
 | **AI‑Powered Quiz Analytics** *(new)* | Advanced insights such as difficulty‑based heatmaps and participant engagement metrics. | 🧪 Experimental |
+| **Quiz Templates** *(new)* | Pre‑defined quiz structures (e.g., True/False, Fill‑in‑the‑Blank) that can be saved and reused. | ✅ Stable |
 
 ---  
 
@@ -155,18 +157,23 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 });
 ```
 
-### 3️⃣ Run a Live Session (Admin)  
+### 3️⃣ Use Quiz Templates *(new)*  
+
+- From the **Create Quiz** screen, select **“Use Template”** to pick a pre‑defined structure (e.g., True/False).  
+- The template populates the question list, which you can then edit or generate additional items via AI.
+
+### 4️⃣ Run a Live Session (Admin)  
 
 1. From the dashboard, select a saved quiz and click **“Go Live”**.  
 2. Share the generated session link with participants.  
 3. Use the admin toolbar to **advance questions**, **view analytics**, **open polls**, or **send messages**.  
 
-### 4️⃣ Participate  
+### 5️⃣ Participate  
 
 - Participants join via the shared link, enter a display name, and answer questions in real time.  
 - Immediate feedback (correct/incorrect) is shown with confetti for right answers.  
 
-### 5️⃣ Review Results  
+### 6️⃣ Review Results  
 
 - After the session ends, the admin can download a CSV of all responses or view a summary chart (Bar, Pie, Donut).  
 
@@ -184,6 +191,8 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
 | `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
 | `GET` | `/analytics/advanced/:sessionId` | ✅ | **New** – Returns AI‑powered analytics such as difficulty heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
+| `GET` | `/templates` | ✅ | **New** – Retrieves the list of available quiz templates. | `{ "templates": [{ "id": "tmpl1", "name": "True/False", "structure": [...] }] }` |
+| `POST` | `/templates/:id/apply` | ✅ | **New** – Applies a selected template to a new quiz draft. | `{ "draftId": "draft123", "questions": [...] }` |
 
 All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.
 
@@ -309,5 +318,4 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 - **React**, **Vite**, **TailwindCSS** – for the excellent developer experience.  
 - **OpenAI** & **Google Gemini** – powering the AI quiz generation.  
-- **Socket.io** – enabling real‑time live sessions.  
-- All contributors who have helped shape Quizfy.  
+- **Socket.io** –
