@@ -21,7 +21,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 > **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.0.0` (stable).  
+**Current version:** `1.1.0` (stable).  
 
 ---  
 
@@ -65,28 +65,31 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 ```
 src/
-├─ assets/            # Images, fonts, logos
-├─ Components/        # Feature‑specific UI
-│   ├─ AI_Features_page/
-│   │   └─ AI_Powered_Quiz.jsx      # Core quiz UI, answer handling
-│   ├─ Authentications/            # Login / Register pages
-│   ├─ Navbar/                     # Top navigation bar
+├─ assets/                # Images, fonts, logos
+├─ Components/            # Feature‑specific UI
+│   ├─ AI_Features_page/          # AI quiz creation & preview
+│   │   └─ AI_Powered_Quiz.jsx
+│   ├─ App/                       # Core app logic (including live‑session UI)
+│   │   ├─ AdminLiveSession.jsx   # Admin live‑session controls & analytics
+│   │   └─ ...                    # Other high‑level pages
+│   ├─ Authentications/           # Login / Register pages
 │   ├─ Footer/
 │   ├─ Landing/
 │   ├─ Loader/
 │   ├─ Messages/
-│   ├─ Protected_Route/            # Route guard based on auth
-│   └─ User/
+│   ├─ Navbar/
+│   ├─ Protected_Route/           # Route guard based on auth
+│   └─ User/                      # Profile & user‑specific components
 ├─ Context/
-│   └─ authContext.jsx             # JWT handling, token refresh
-├─ Layout.jsx                      # Global layout wrapper
-├─ main.jsx                        # App entry point (ReactDOM.createRoot)
-└─ style.css                       # Tailwind base imports
+│   └─ authContext.jsx            # JWT handling, token refresh
+├─ Layout.jsx                     # Global layout wrapper
+├─ main.jsx                       # App entry point (ReactDOM.createRoot)
+└─ style.css                      # Tailwind base imports
 ```
 
 * **AuthContext** parses JWTs, stores the access token in `localStorage`, and automatically refreshes it via `/user/token/RefreshAccessToken`.  
 * **AI_Powered_Quiz** fetches generated questions from the backend, tracks progress, shows correct/incorrect pop‑ups, and triggers confetti on success.  
-* **AdminLiveSession** (under `Components/App/Going Live Functionality`) manages the live session lifecycle, receives participant answers through Socket.io, and renders analytics (charts, rankings, polls).  
+* **AdminLiveSession** (under `Components/App/`) manages the live session lifecycle, receives participant answers through Socket.io, and renders analytics (charts, rankings, polls).  
 
 All network calls are prefixed with the `VITE_BACKEND_URL` constant defined in `authContext.jsx`.  
 
@@ -320,32 +323,4 @@ For more help, open an issue or join the discussion in the **GitHub Discussions*
 
 ---  
 
-## Roadmap  
-
-- **TypeScript migration** – improve developer experience and catch bugs early.  
-- **Persisted session recordings** – store session data for later replay.  
-- **Multi‑language support** – generate quizzes in languages other than English.  
-- **Custom question types** – fill‑in‑the‑blank, ordering, and image‑based questions.  
-- **Mobile‑first UI enhancements** – better touch interactions for participants.  
-
----  
-
-## License & Credits  
-
-**License:** MIT © 2024‑2026 Gurudas Dev. See the [LICENSE](LICENSE) file for details.  
-
-### Contributors  
-
-- **Gurudas Dev** – project architect & lead developer  
-- *(Add additional contributors as they join)*  
-
-### Acknowledgments  
-
-- **OpenAI** and **Google Gemini** for the generative AI models.  
-- **Tailwind Labs** for the utility‑first CSS framework.  
-- **Socket.io** team for real‑time communication.  
-- Icons from **Lucide**, **React‑Icons**, and **Flaticon**.  
-
----  
-
-*Happy quizzing! 🎉*
+##
