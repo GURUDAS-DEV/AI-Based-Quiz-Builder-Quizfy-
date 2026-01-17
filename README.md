@@ -82,6 +82,7 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 | npm (or Yarn) | 9.x |
 | Git | any recent version |
 | (Optional) Docker | 20.x |
+| (Optional) `serve` CLI | `npm i -g serve` |
 
 ### Steps  
 
@@ -99,124 +100,152 @@ npm i -g vite
 
 ### Configuration  
 
-Create a `.env` file in the project root (Vite automatically prefixes env vars with `VITE_`):
+Create a `.env` file in the project root (copy from the example) and fill in the required values:
 
 ```dotenv
-# Base URL of the backend API (must be reachable from the browser)
 VITE_BACKEND_URL=https://quizidy-backend.duckdns.org
-
-# (Optional) Socket.io endpoint if it differs from the backend URL
-VITE_SOCKET_URL=wss://quizidy-backend.duckdns.org
-
-# Enable recurring scheduler (true/false) – new in v1.9.0
-VITE_ENABLE_RECURRING_SCHEDULER=false
+VITE_OPENAI_API_KEY=your-openai-key
+VITE_GOOGLE_GEMINI_API_KEY=your-gemini-key
+VITE_SOCKET_IO_URL=https://quizidy-backend.duckdns.org
 ```
 
-> **Tip:** The backend must allow CORS for `http://0.0.0.0:5173` (or the port you set).  
-
-### Running the App (development)  
-
-```bash
-npm run dev
-# → Vite binds to 0.0.0.0:5173 (strictPort). Open http://localhost:5173
-```
-
-> **Note:** Because `strictPort: true` is enabled, Vite will **fail** to start if port 5173 is already in use. Adjust the port in `vite.config.js` if needed.  
-
-### Building for Production  
-
-```bash
-npm run build          # Generates ./dist
-npm run preview        # Serves the built files locally (uses `serve`)
-```
-
-### Docker (optional)  
-
-```bash
-# Build the image
-docker build -t quizfy:1.9.0 .
-
-# Run the container (exposes port 80 inside the container)
-docker run -d -p 8080:80 --name quizfy quizfy:1.9.0
-```
-
-> The container serves the static `dist` folder using `serve`. Ensure you have built the assets first (`npm run build`).  
+> **Note**: The backend URL and API keys are mandatory for AI‑generated content and live sessions.
 
 ---  
 
 ## Usage  
 
-### 1️⃣ Sign‑up / Login  
+### Development (Hot‑Reload)  
 
-- Navigate to **/login** or **/register**.  
-- After a successful login, a JWT is stored in `localStorage` and the UI updates to the authenticated state.  
-
-### 2️⃣ Create an AI‑Generated Quiz  
-
-1. Click **“Create Quiz”** in the navigation bar.  
-2. Enter a **topic** (e.g., *“World War II”*) and optional **difficulty**.  
-3. Press **Generate** – the frontend calls the backend, which forwards the request to the Google Gemini / OpenAI API.  
-4. Review the generated questions on the **AI Quiz Review & Edit** page, make any adjustments, then **Save**.  
-
-```jsx
-// src/Components/AI_Features_page/AI_Powered_Quiz.jsx
-await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-  },
-  body: JSON.stringify({ topic, difficulty }),
-});
+```bash
+npm run dev
+# or
+yarn dev
 ```
 
-### 3️⃣ Use Quiz Templates  
+Open `http://localhost:5173` in your browser. Vite will automatically reload the page when you edit source files.
 
-- From the **Create Quiz** screen, select **“Use Template”** to pick a pre‑defined structure (e.g., True/False).  
-- The template populates the question list, which you can edit or extend via AI.  
+### Building for Production  
 
-### 4️⃣ Schedule a Quiz (new in v1.9.0)  
+```bash
+npm run build
+# or
+yarn build
+```
 
-1. Open **“Schedule Quiz”** from the dashboard.  
-2. Choose a saved quiz, set a **date & time**, and optionally enable **recurring** (daily/weekly).  
-3. Save – the backend will automatically launch the session at the specified time and send the join URL to participants via email (if configured).  
+The compiled, minified assets are emitted to the `dist/` directory (the recent commit added the full production bundle).  
 
-### 5️⃣ Run a Live Session (Admin)  
+### Previewing the Production Build Locally  
 
-1. From the dashboard, select a saved (or scheduled) quiz and click **“Go Live”**.  
-2. Share the generated session link with participants.  
-3. Use the admin toolbar to **advance questions**, **view analytics**, **open polls**, or **send messages**.  
+```bash
+npm run preview
+# or
+yarn preview
+```
 
-### 6️⃣ Participate  
+This starts a lightweight static server (powered by Vite) on `http://localhost:4173`.
 
-- Participants join via the shared link, enter a display name, and answer questions in real time.  
-- Immediate feedback (correct/incorrect) is shown with confetti for right answers.  
+### Running the Built App with `serve`  
 
-### 7️⃣ Review Results  
+```bash
+# Install the static server globally if you haven't already
+npm i -g serve
 
-- After the session ends, the admin can download a CSV of all responses or view a summary chart (Bar, Pie, Donut).  
-- Advanced AI‑powered analytics (heatmaps, difficulty curves) are now available under **“Insights”**.  
+# Serve the `dist` folder
+serve -s dist
+```
+
+The app will be available at `http://localhost:3000` (or the port shown in the console).
 
 ---  
 
-## API Documentation (Frontend → Backend)  
+## Development  
 
-| Method | Endpoint | Auth | Description | Example Response |
-|--------|----------|------|-------------|------------------|
-| `POST` | `/auth/login` | ❌ | Returns `accessToken` and `refreshToken`. | `{ "accessToken": "...", "refreshToken": "..." }` |
-| `GET` | `/user/token/RefreshAccessToken` | ✅ (cookie) | Refreshes the JWT; used automatically by `authContext`. | `{ "accessToken": "..." }` |
-| `POST` | `/quiz/generate` | ✅ | Sends `{ topic, difficulty }`; returns generated questions. | `{ "questions": [{ "id": "...", "text": "...", "options": [...] }] }` |
-| `GET` | `/quiz/:id` | ✅ | Retrieves a saved quiz. | `{ "id": "...", "title": "...", "questions": [...] }` |
-| `PUT` | `/quiz/:id/review` | ✅ | Saves edits made on the **AI Quiz Review & Edit** page. | `{ "message": "Quiz updated successfully." }` |
-| `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
-| `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
-| `GET` | `/analytics/advanced/:sessionId` | ✅ | Returns AI‑powered analytics such as difficulty‑based heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
-| `GET` | `/templates` | ✅ | Retrieves the list of available quiz templates. | `{ "templates": [{ "id": "tmpl1", "name": "True/False", "structure": [...] }] }` |
-| `POST` | `/templates/:id/apply` | ✅ | Applies a selected template to a new quiz draft. | `{ "draftId": "draft123", "questions": [...] }` |
-| `POST` | `/schedule` | ✅ | Schedules a quiz to be launched at a future date/time. Supports recurrence flags. | `{ "scheduleId": "sch789", "status": "scheduled" }` |
-| `GET` | `/schedule/:scheduleId` | ✅ | Retrieves schedule details, including next run time and recurrence pattern. | `{ "scheduleId": "sch789", "nextRun": "2026-02-01T10:00:00Z", "recurrence": "weekly" }` |
+| Task | Command |
+|------|---------|
+| **Run tests** | `npm test` (or `yarn test`) |
+| **Lint** | `npm run lint` |
+| **Format** | `npm run format` |
+| **Check TypeScript (if added later)** | `npm run tsc` |
 
-All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.
+### Code Structure Overview  
+
+```
+src/
+├── Components/
+│   ├── AI_Features_page/      # AI generation UI
+│   ├── Authentications/       # Login / Register flows
+│   ├── Footer/
+│   ├── Landing/
+│   ├── Loader/
+│   ├── Messages/
+│   ├── Navbar/
+│   ├── Protected_Route/
+│   └── User/
+├── Context/
+│   └── authContext.jsx        # React Context for auth state
+├── Layout.jsx                 # Global layout wrapper
+├── assets/
+│   ├── Images/                # Logos, illustrations
+│   └── fonts/                 # Custom font files
+├── main.jsx                   # Application entry point
+└── style.css                  # Global Tailwind imports
+```
+
+The `dist/` folder now contains the compiled assets (JS bundles, images, fonts, etc.) generated by the latest build. You normally **do not edit** anything inside `dist/`; it is recreated on each `npm run build`.
+
+---  
+
+## Deployment  
+
+### Docker (Recommended for Production)  
+
+A multi‑stage Dockerfile is included in the repository.
+
+```bash
+# Build the Docker image
+docker build -t quizfy:1.9.0 .
+
+# Run the container
+docker run -d -p 8080:80 --name quizfy \
+  -e VITE_BACKEND_URL=https://quizidy-backend.duckdns.org \
+  -e VITE_OPENAI_API_KEY=your-openai-key \
+  -e VITE_GOOGLE_GEMINI_API_KEY=your-gemini-key \
+  quizfy:1.9.0
+```
+
+The container serves the static files from `dist/` using an Nginx server (configured in the Dockerfile). The app will be reachable at `http://localhost:8080`.
+
+### Vercel (Frontend‑only)  
+
+1. Push the repository to GitHub.  
+2. Connect the repo to Vercel and select the **`npm run build`** command.  
+3. Set the required environment variables (`VITE_BACKEND_URL`, `VITE_OPENAI_API_KEY`, `VITE_GOOGLE_GEMINI_API_KEY`, `VITE_SOCKET_IO_URL`) in the Vercel dashboard.  
+
+Vercel will automatically build and deploy the `dist/` folder on every push to the `main` branch.
+
+### Traditional Static Hosting  
+
+Upload the contents of the `dist/` folder to any static file host (Netlify, GitHub Pages, AWS S3 + CloudFront, etc.). Ensure the host rewrites all routes to `index.html` for client‑side routing to work.
+
+---  
+
+## API Documentation  
+
+Quizfy’s **frontend** communicates with a separate backend service (`https://quizidy-backend.duckdns.org`). The backend exposes the following key endpoints (refer to the backend repository for the full OpenAPI spec):
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/api/auth/login` | Returns JWT access & refresh tokens. | ❌ |
+| `POST` | `/api/auth/register` | Creates a new user account. | ❌ |
+| `GET` | `/api/quizzes/generate` | Generates a quiz using the selected LLM. Query params: `topic`, `language`, `numQuestions`. | ✅ |
+| `POST` | `/api/quizzes` | Persists a generated or manually created quiz. | ✅ |
+| `GET` | `/api/quizzes/:id` | Retrieves a quiz definition (questions, options, explanations). | ✅ |
+| `POST` | `/api/sessions/start` | Starts a live session for a given quiz ID. Returns a session token. | ✅ |
+| `POST` | `/api/sessions/:sessionId/answer` | Submits a participant’s answer. | ✅ |
+| `GET` | `/api/sessions/:sessionId/results` | Fetches real‑time results for the admin dashboard. | ✅ |
+
+**Authentication** – All protected routes require an `Authorization: Bearer <access_token>` header. Tokens are refreshed automatically by the frontend using the `/api/auth/refresh` endpoint.
 
 ---  
 
@@ -224,59 +253,77 @@ All requests must include the `Authorization: Bearer <accessToken>` header unles
 
 We welcome contributions! Please follow these steps:
 
-1. **Fork** the repository and **clone** your fork.  
-2. Create a feature branch: `git checkout -b feat/awesome-feature`.  
-3. Install dependencies (`npm install`).  
-4. Make your changes, ensuring the app still builds (`npm run dev`).  
-5. Run the test suite: `npm run test`. All new logic should be covered.  
-6. Run the linter: `npm run lint`. Fix any warnings/errors.  
-7. Commit with a clear message: `git commit -m "feat: add awesome feature"`  
-8. Push to your fork and open a **Pull Request** against `main`.  
+1. **Fork** the repository and create a new branch for your feature or bug‑fix.  
+   ```bash
+   git checkout -b feature/awesome-feature
+   ```
+2. **Install** the project locally (see *Installation* above).  
+3. **Make your changes** and ensure the code passes linting and tests.  
+   ```bash
+   npm run lint
+   npm test
+   ```
+4. **Commit** with a clear message following the Conventional Commits format.  
+5. **Push** to your fork and open a **Pull Request** against the `main` branch.  
+6. Fill out the PR template, linking any related issues.  
 
 ### Development Workflow  
 
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests
-npm run test
-
-# Lint code
-npm run lint
-```
+| Step | Command |
+|------|---------|
+| **Start dev server** | `npm run dev` |
+| **Run unit tests** | `npm test` |
+| **Run end‑to‑end tests** (if added) | `npm run e2e` |
+| **Check code style** | `npm run lint` |
+| **Format files** | `npm run format` |
 
 ### Code Style  
 
-- **ESLint** + **Prettier** are enforced.  
-- Use functional components and React Hooks.  
-- Keep JSX tidy; extract reusable UI pieces into the `src/Components/` folder.  
+- **Prettier** is enforced on all `.js/.jsx/.css` files.  
+- **ESLint** rules are based on the Airbnb React style guide with additional React‑hooks checks.  
+- Use **functional components** and **React Hooks** exclusively; avoid class components.  
 
-### Debugging Tips  
+---  
 
-- **Network tab** – inspect API calls and verify the `Authorization` header.  
-- **JWT payload** – decode with `atob(token.split('.')[1])` (see `authContext.jsx`).  
-- **Socket.io events** – logged in `AdminLiveSession.jsx`; add `console.log` to view emitted/received messages.  
-- **Docker logs** – `docker logs -f quizfy` to view runtime errors.  
+## Troubleshooting  
+
+| Issue | Solution |
+|-------|----------|
+| **Cannot connect to backend** | Verify that `VITE_BACKEND_URL` points to a reachable server and that CORS is enabled on the backend. |
+| **AI generation returns 401** | Ensure your OpenAI / Google Gemini API keys are valid and correctly set in `.env`. |
+| **Live session not updating** | Check that the Socket.io client can reach the backend (`VITE_SOCKET_IO_URL`). Open the browser console for connection errors. |
+| **Build fails with “module not found”** | Run `npm install` again to refresh the lockfile, then `npm run build`. |
+| **Docker container returns 404** | Confirm that the `dist/` folder exists (run `npm run build` before building the image). |
+
+For additional help, open an issue or join the discussion in the **#questions** channel of the repository’s Discussions tab.
+
+---  
+
+## Roadmap  
+
+- **v2.0** – Full TypeScript migration for stricter type safety.  
+- **AI‑Driven Adaptive Difficulty** – Dynamically adjust question difficulty based on participant performance.  
+- **Offline Mode** – Allow quiz creation and participation without an active internet connection (service workers).  
+- **Enhanced Analytics** – Exportable PDF reports with visual heatmaps.  
+- **Plugin Marketplace** – Community‑driven question‑type plugins.
 
 ---  
 
 ## License & Credits  
 
-This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.  
+**License**: MIT – see the [LICENSE](LICENSE) file for details.  
 
-**Contributors**  
+**Authors & Contributors**  
 
-- Gurudas Bhardwaj – Project lead & core development  
-- (Add additional contributors as they join)  
+- **Gurudas Dev** – Project lead & core developer  
+- **Community contributors** – See the GitHub contributors graph for a full list.  
 
 **Acknowledgments**  
 
 - OpenAI & Google Gemini for the underlying language models.  
-- The React, Vite, and TailwindCSS communities for excellent tooling.  
-- Chart.js, Socket.io, and Redis teams for robust real‑time capabilities.  
+- Socket.io team for real‑time communication utilities.  
+- TailwindCSS community for the utility‑first CSS framework.  
 
 ---  
+
+*Happy quizzing! 🎉*
