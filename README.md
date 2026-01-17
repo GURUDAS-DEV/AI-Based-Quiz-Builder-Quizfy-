@@ -123,6 +123,8 @@ npm run build          # Generates ./dist
 npm run preview        # Serves the built files locally (uses `serve`)
 ```
 
+> **Note:** The repository no longer ships pre‑built assets in `dist`. Running `npm run build` always generates a fresh, clean `dist` folder.
+
 You can also serve the `dist` folder with any static file server (NGINX, Apache, Docker, Vercel, Netlify, etc.).
 
 ---  
@@ -181,7 +183,7 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `PUT` | `/quiz/:id/review` | ✅ | Saves edits made on the **AI Quiz Review & Edit** page. | `{ "message": "Quiz updated successfully." }` |
 | `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
 | `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
-| `GET` | `/analytics/advanced/:sessionId` | ✅ | **New** – Returns AI‑powered analytics such as difficulty heatmaps. | `{ "heatmap": {...}, "engagementScore": 87 }` |
+| `GET` | `/analytics/advanced/:sessionId` | ✅ | **New** – Returns AI‑powered analytics such as difficulty heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
 
 All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.
 
