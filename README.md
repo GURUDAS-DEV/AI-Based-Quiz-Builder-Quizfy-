@@ -8,6 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
 [![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
+[![Docker](https://img.shields.io/badge/Docker-%20-%230db7ed?logo=docker)](https://hub.docker.com/r/quizfy)  
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
@@ -21,7 +22,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 
 **Target audience:** teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-**Current version:** `1.2.0` (stable).  
+**Current version:** `1.3.0` (stable).  
 
 ---  
 
@@ -30,6 +31,7 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | Feature | Description | Status |
 |---------|-------------|--------|
 | **AI‑Generated Quiz** | Uses Google Gemini / OpenAI to generate questions, multiple‑choice options, and detailed explanations. | ✅ Stable |
+| **AI Quiz Review & Edit** | New page that lets admins preview, edit, and reorder generated questions before saving. | ✅ Stable |
 | **User Authentication** | JWT‑based login, automatic token refresh, role‑based UI (admin vs participant). | ✅ Stable |
 | **Live Quiz Sessions** | Admin can start/stop a session, broadcast questions, and receive answers in real time via Socket.io. | ✅ Stable |
 | **Participant Interaction** | Chat, polls, rankings, and a “raise hand” feature for Q&A. | ✅ Stable |
@@ -54,10 +56,11 @@ Quizfy is a modern web application that lets educators, corporate trainers, and 
 | **Real‑time** | `socket.io-client` | Live session communication |
 | **State Management** | React Context (`authContext.jsx`) | Auth state & user info |
 | **Charts & Visuals** | `chart.js`, `react-confetti`, `canvas-confetti` | Data visualisation & celebration effects |
+| **Testing** | Vitest, React Testing Library | Unit & integration tests |
 | **Backend (external)** | Node/Express (hosted at `quizidy-backend.duckdns.org`) | Auth, token refresh, quiz generation, Redis cache |
 | **Cache / PubSub** | `redis` (backend) | Fast session state sharing |
-| **Testing / Linting** | ESLint (`@eslint/js`, `eslint-plugin-react-hooks`) | Code quality |
-| **Deployment** | `serve`, Docker (optional) | Production static serving |
+| **Linting / Formatting** | ESLint (`@eslint/js`, `eslint-plugin-react-hooks`), Prettier | Code quality |
+| **Deployment** | `serve`, Docker (multi‑stage) | Production static serving |
 
 ---  
 
@@ -96,6 +99,9 @@ VITE_BACKEND_URL=https://quizidy-backend.duckdns.org
 
 # (Optional) Port for the Vite dev server
 VITE_PORT=5173
+
+# (Optional) Socket.io endpoint if it differs from the backend URL
+VITE_SOCKET_URL=wss://quizidy-backend.duckdns.org
 ```
 
 > **Tip:** The backend must allow CORS for `http://localhost:5173` (or the port you set).
@@ -131,10 +137,10 @@ You can also serve the `dist` folder with any static file server (NGINX, Apache,
 1. Click **“Create Quiz”** in the navigation bar.  
 2. Enter a **topic** (e.g., *“World War II”*) and optional **difficulty**.  
 3. Press **Generate** – the frontend calls the backend, which forwards the request to the Google Gemini / OpenAI API.  
-4. Review the generated questions, edit if needed, and **Save**.  
+4. Review the generated questions on the **AI Quiz Review & Edit** page, make any adjustments, then **Save**.  
 
 ```jsx
-// Inside src/Components/AI_Features_page/AI_Powered_Quiz.jsx
+// src/Components/AI_Features_page/AI_Powered_Quiz.jsx
 await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
   method: "POST",
   headers: {
@@ -170,6 +176,7 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `GET` | `/user/token/RefreshAccessToken` | ✅ (cookie) | Refreshes the JWT; used automatically by `authContext`. | `{ "accessToken": "..." }` |
 | `POST` | `/quiz/generate` | ✅ | Sends `{ topic, difficulty }`; returns generated questions. | `{ "questions": [{ "id": "...", "text": "...", "options": [...] }] }` |
 | `GET` | `/quiz/:id` | ✅ | Retrieves a saved quiz. | `{ "id": "...", "title": "...", "questions": [...] }` |
+| `PUT` | `/quiz/:id/review` | ✅ | Saves edits made on the **AI Quiz Review & Edit** page. | `{ "message": "Quiz updated successfully." }` |
 | `POST` | `/session/:quizId/start` | ✅ | Starts a live session, returns a `sessionId`. | `{ "sessionId": "abc123", "joinUrl": "..." }` |
 | `GET` | `/session/:sessionId/analytics` | ✅ | Real‑time analytics for the admin dashboard. | `{ "answersPerOption": {...}, "avgResponseTime": 12.3 }` |
 
@@ -186,12 +193,18 @@ npm install          # install dependencies
 npm run dev          # start Vite dev server
 ```
 
+### Testing  
+
+```bash
+npm run test         # runs Vitest unit & integration tests
+npm run test:watch   # watch mode
+```
+
 ### Linting & Formatting  
 
 ```bash
-npm run lint   # Runs ESLint across the src folder
-# If Prettier is added, you can run:
-npm run format
+npm run lint         # Runs ESLint across the src folder
+npm run format       # Runs Prettier (if added)
 ```
 
 ### Debugging Tips  
@@ -204,39 +217,51 @@ npm run format
 
 ## Deployment  
 
-### Docker (optional)  
+### Docker (multi‑stage)  
 
 ```dockerfile
 # Dockerfile (place in repo root)
+
+# ---------- Builder ----------
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+ARG VITE_BACKEND_URL
+ARG VITE_SOCKET_URL
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 RUN npm run build
 
+# ---------- Production ----------
 FROM nginx:stable-alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-Build & run:
+Build & run (replace env vars with your production values):
 
 ```bash
-docker build -t quizfy .
+docker build \
+  --build-arg VITE_BACKEND_URL=https://quizidy-backend.duckdns.org \
+  --build-arg VITE_SOCKET_URL=wss://quizidy-backend.duckdns.org \
+  -t quizfy .
+
 docker run -p 8080:80 quizfy
 ```
 
 ### Static Hosting  
 
-The `dist` folder can be deployed to any static‑file host (Vercel, Netlify, GitHub Pages, Cloudflare Pages). Ensure the `VITE_BACKEND_URL` environment variable is set in the hosting platform’s settings.
+The `dist` folder can be deployed to any static‑file host (Vercel, Netlify, GitHub Pages, Cloudflare Pages). Ensure the `VITE_BACKEND_URL` (and optionally `VITE_SOCKET_URL`) environment variable is set in the hosting platform’s settings.
 
 ### Production Environment Variables  
 
 | Variable | Description |
 |----------|-------------|
 | `VITE_BACKEND_URL` | Base URL of the backend API (must be reachable from the client). |
+| `VITE_SOCKET_URL` (optional) | WebSocket endpoint for real‑time communication. |
 | `VITE_PORT` (optional) | Port for the Vite preview server (used only locally). |
 
 ---  
@@ -249,14 +274,15 @@ We welcome contributions! Please follow these steps:
 2. Create a feature branch: `git checkout -b feat/awesome-feature`.  
 3. Install dependencies (`npm install`).  
 4. Make your changes, ensuring the app still builds (`npm run dev`).  
-5. Run the linter: `npm run lint`. Fix any warnings/errors.  
-6. Commit with a clear message: `git commit -m "feat: add awesome feature"`.  
-7. Push to your fork and open a **Pull Request** against `main`.  
+5. Run the test suite: `npm run test`. All new logic should be covered.  
+6. Run the linter: `npm run lint`. Fix any warnings/errors.  
+7. Commit with a clear message: `git commit -m "feat: add awesome feature"`  
+8. Push to your fork and open a **Pull Request** against `main`.  
 
 ### Development Workflow  
 
-- Pull Requests must pass the CI lint step.  
-- Add unit/integration tests for new logic (Jest/Vitest recommended).  
+- Pull Requests must pass the CI lint and test steps.  
+- Add unit/integration tests for new logic (Vitest recommended).  
 - Update the **README** if you add public‑facing features or change setup steps.  
 
 ### Code Review Guidelines  
