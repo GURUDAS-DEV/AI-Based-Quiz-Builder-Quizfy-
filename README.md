@@ -2,14 +2,14 @@
 
 ![Quizfy Logo](./src/assets/Images/Logo/LOGO.png)
 
-[![Vite Build](https://img.shields.io/badge/Vite-5.0.0-blue?logo=vite)](https://vitejs.dev)  
+[![Vite Build](https://img.shields.io/badge/Vite-5.2.0-blue?logo=vite)](https://vitejs.dev)  
 [![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)](https://reactjs.org)  
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
 [![Node.js](https://img.shields.io/badge/Node-%3E%3D18.0.0-success?logo=node.js)](https://nodejs.org)  
 [![CI](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions/workflows/ci.yml/badge.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/actions)  
 [![Docker](https://img.shields.io/badge/Docker-%20-%230db7ed?logo=docker)](https://hub.docker.com/r/quizfy)  
-[![Version](https://img.shields.io/badge/Version-1.8.2-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.8.2)  
+[![Version](https://img.shields.io/badge/Version-1.9.0-blue.svg)](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/releases/tag/v1.9.0)  
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
@@ -23,7 +23,7 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 
 *Target audience*: teachers, corporate trainers, event organizers, and anyone who wants to run interactive quizzes without manual question authoring.  
 
-*Current version*: `1.8.2` (stable).  
+*Current version*: `1.9.0` (stable).  
 
 ---  
 
@@ -45,7 +45,9 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 | **Multilingual Support** | Generate quizzes in multiple languages using the underlying LLMs. | 🧪 Experimental |
 | **AI‑Powered Quiz Analytics** | Advanced insights such as difficulty‑based heatmaps and participant engagement metrics. | 🧪 Experimental |
 | **Quiz Templates** | Pre‑defined quiz structures (e.g., True/False, Fill‑in‑the‑Blank) that can be saved and reused. | ✅ Stable |
-| **Quiz Scheduler** | Schedule quizzes to be automatically launched at a future date/time. | 🧪 Experimental |
+| **Quiz Scheduler** | Schedule quizzes to be automatically launched at a future date/time. | ✅ Stable |
+| **Quiz Scheduler – Recurring Sessions** | New in v1.9.0 – ability to set recurring (daily/weekly) sessions. | 🧪 Experimental |
+| **AI‑Generated Explanations** | Auto‑generate detailed answer explanations for each question. | ✅ Stable |
 
 ---  
 
@@ -54,7 +56,7 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | **Framework** | React 19 (`react-router@7`) | UI rendering & routing |
-| **Bundler / Dev Server** | Vite 5 | Fast HMR & production builds |
+| **Bundler / Dev Server** | Vite 5.2 | Fast HMR & production builds |
 | **Styling** | TailwindCSS 4, PostCSS, Autoprefixer | Utility‑first responsive design |
 | **Icons** | `lucide-react`, `react-icons`, `@flaticon/flaticon-uicons` | Consistent SVG icon set |
 | **AI** | `@google/genai`, `openai` | Generate quiz content |
@@ -65,7 +67,8 @@ Quizfy is a modern web application that enables educators, corporate trainers, a
 | **Backend (external)** | Node/Express (hosted at `quizidy-backend.duckdns.org`) | Auth, token refresh, quiz generation, Redis cache |
 | **Cache / PubSub** | `redis` (backend) | Fast session state sharing |
 | **Linting / Formatting** | ESLint (`@eslint/js`, `eslint-plugin-react-hooks`), Prettier | Code quality |
-| **Deployment** | `serve`, Docker (multi‑stage) | Production static serving |
+| **Containerisation** | Docker (multi‑stage) | Consistent production builds |
+| **Deployment** | `serve`, Docker, Vercel (frontend) | Production static serving |
 
 ---  
 
@@ -104,6 +107,9 @@ VITE_BACKEND_URL=https://quizidy-backend.duckdns.org
 
 # (Optional) Socket.io endpoint if it differs from the backend URL
 VITE_SOCKET_URL=wss://quizidy-backend.duckdns.org
+
+# Enable recurring scheduler (true/false) – new in v1.9.0
+VITE_ENABLE_RECURRING_SCHEDULER=false
 ```
 
 > **Tip:** The backend must allow CORS for `http://0.0.0.0:5173` (or the port you set).  
@@ -124,7 +130,17 @@ npm run build          # Generates ./dist
 npm run preview        # Serves the built files locally (uses `serve`)
 ```
 
-> The repository no longer ships pre‑built assets in `dist`. Running `npm run build` always generates a fresh `dist` folder.  
+### Docker (optional)  
+
+```bash
+# Build the image
+docker build -t quizfy:1.9.0 .
+
+# Run the container (exposes port 80 inside the container)
+docker run -d -p 8080:80 --name quizfy quizfy:1.9.0
+```
+
+> The container serves the static `dist` folder using `serve`. Ensure you have built the assets first (`npm run build`).  
 
 ---  
 
@@ -159,20 +175,27 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 - From the **Create Quiz** screen, select **“Use Template”** to pick a pre‑defined structure (e.g., True/False).  
 - The template populates the question list, which you can edit or extend via AI.  
 
-### 4️⃣ Run a Live Session (Admin)  
+### 4️⃣ Schedule a Quiz (new in v1.9.0)  
 
-1. From the dashboard, select a saved quiz and click **“Go Live”**.  
+1. Open **“Schedule Quiz”** from the dashboard.  
+2. Choose a saved quiz, set a **date & time**, and optionally enable **recurring** (daily/weekly).  
+3. Save – the backend will automatically launch the session at the specified time and send the join URL to participants via email (if configured).  
+
+### 5️⃣ Run a Live Session (Admin)  
+
+1. From the dashboard, select a saved (or scheduled) quiz and click **“Go Live”**.  
 2. Share the generated session link with participants.  
 3. Use the admin toolbar to **advance questions**, **view analytics**, **open polls**, or **send messages**.  
 
-### 5️⃣ Participate  
+### 6️⃣ Participate  
 
 - Participants join via the shared link, enter a display name, and answer questions in real time.  
 - Immediate feedback (correct/incorrect) is shown with confetti for right answers.  
 
-### 6️⃣ Review Results  
+### 7️⃣ Review Results  
 
 - After the session ends, the admin can download a CSV of all responses or view a summary chart (Bar, Pie, Donut).  
+- Advanced AI‑powered analytics (heatmaps, difficulty curves) are now available under **“Insights”**.  
 
 ---  
 
@@ -190,7 +213,8 @@ await fetch(`${import.meta.env.VITE_BACKEND_URL}/quiz/generate`, {
 | `GET` | `/analytics/advanced/:sessionId` | ✅ | Returns AI‑powered analytics such as difficulty‑based heatmaps and participant engagement metrics. | `{ "heatmap": {...}, "engagementScore": 87 }` |
 | `GET` | `/templates` | ✅ | Retrieves the list of available quiz templates. | `{ "templates": [{ "id": "tmpl1", "name": "True/False", "structure": [...] }] }` |
 | `POST` | `/templates/:id/apply` | ✅ | Applies a selected template to a new quiz draft. | `{ "draftId": "draft123", "questions": [...] }` |
-| `POST` | `/schedule` | ✅ | Schedules a quiz to be launched at a future date/time. | `{ "scheduleId": "sch789", "status": "scheduled" }` |
+| `POST` | `/schedule` | ✅ | Schedules a quiz to be launched at a future date/time. Supports recurrence flags. | `{ "scheduleId": "sch789", "status": "scheduled" }` |
+| `GET` | `/schedule/:scheduleId` | ✅ | Retrieves schedule details, including next run time and recurrence pattern. | `{ "scheduleId": "sch789", "nextRun": "2026-02-01T10:00:00Z", "recurrence": "weekly" }` |
 
 All requests must include the `Authorization: Bearer <accessToken>` header unless otherwise noted.
 
@@ -236,6 +260,7 @@ npm run lint
 - **Network tab** – inspect API calls and verify the `Authorization` header.  
 - **JWT payload** – decode with `atob(token.split('.')[1])` (see `authContext.jsx`).  
 - **Socket.io events** – logged in `AdminLiveSession.jsx`; add `console.log` to view emitted/received messages.  
+- **Docker logs** – `docker logs -f quizfy` to view runtime errors.  
 
 ---  
 
@@ -252,5 +277,6 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 - OpenAI & Google Gemini for the underlying language models.  
 - The React, Vite, and TailwindCSS communities for excellent tooling.  
+- Chart.js, Socket.io, and Redis teams for robust real‑time capabilities.  
 
 ---  
