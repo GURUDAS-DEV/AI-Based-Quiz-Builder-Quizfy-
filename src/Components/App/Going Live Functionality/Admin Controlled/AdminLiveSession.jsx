@@ -31,17 +31,14 @@ const AdminLiveSession = () => {
 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [options, setOptions] = useState([]);
-  const [allQuestion, setAllQuestion] = useState([]);
   const [designType, setDesignType] = useState("");
 
-  const [showJoiningPopup, setShowJoiningPopup] = useState(false);
   const [userNameJustJoined, setUserNameJustJoined] = useState("");
   const [isUnauthorized, setIsUnauthorized] = useState(false);
   const navigate = useNavigate();
 
   // UI state
   const [comment, setComment] = useState(false);
-  const [analytics, setAnalytics] = useState(false);
   const [goLeft, setGoLeft] = useState(false);
   const [goRight, setGoRight] = useState(false);
   const [shareLink, setShareLink] = useState(false);
@@ -49,8 +46,6 @@ const AdminLiveSession = () => {
   const [resetResult, setResetResult] = useState(false);
   const [currentParticipant, setCurrentParticipant] = useState(false);
   const [openComment, setOpenComment] = useState(false);
-  const [timerInfo, setTimerInfo] = useState(false);
-  const [startTimer, setStartTimer] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showCommentSection, setShowCommentSection] = useState(false);
   const [showParticipant, setShowParticipant] = useState(false);
