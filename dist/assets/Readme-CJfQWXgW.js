@@ -1,0 +1,1 @@
+import{j as e}from"./index-h_fRO0Hs.js";const l=()=>e.jsx("div",{className:"w-screen h-screen flex justify-center items-center",children:e.jsx("h1",{className:"text-3xl text-indigo-400 font-Outfit font-bold",children:"Once The Project will be done readme file will be available"})});export{l as default};
