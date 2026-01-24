@@ -13,7 +13,7 @@
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
-[🚀 Demo (hosted)](https://quizfy-demo.vercel.app) | [📚 Docs (this file)](#usage) | [🐞 Report a bug](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/issues)  
+[🚀 Demo (hosted)](https://quizifyai.me) | [🐞 Report a bug](https:quizifyai.me)  
 
 ---  
 
