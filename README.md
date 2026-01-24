@@ -203,13 +203,17 @@ The `dist/` folder contains the compiled assets (JS bundles, images, fonts, etc.
 
 ### Docker (Recommended for Production)  
 
-A multi‑stage Dockerfile is included in the repository.
+A **multi‑stage Dockerfile** is now part of the repository (`Dockerfile`). It builds the React app in a Node environment, then serves the static files with **Nginx**. The image is lightweight (~30 MB) and ready for production.
+
+#### Build the Docker image  
 
 ```bash
-# Build the Docker image
 docker build -t quizfy:1.11.0 .
+```
 
-# Run the container
+#### Run the container  
+
+```bash
 docker run -d -p 8080:80 --name quizfy \
   -e VITE_BACKEND_URL=https://quizidy-backend.duckdns.org \
   -e VITE_OPENAI_API_KEY=your-openai-key \
@@ -218,7 +222,35 @@ docker run -d -p 8080:80 --name quizfy \
   quizfy:1.11.0
 ```
 
-The container serves the static files from `dist/` using an Nginx server (configured in the Dockerfile). The app will be reachable at `http://localhost:8080`.
+* **Port 80** inside the container is exposed as **8080** on the host (adjust `-p` as needed).  
+* Environment variables are passed at runtime so the same image can be reused across environments (dev, staging, prod).  
+
+#### Dockerfile snapshot (for reference)
+
+```dockerfile
+# ---------- Build Stage ----------
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+ARG VITE_BACKEND_URL
+ARG VITE_OPENAI_API_KEY
+ARG VITE_GOOGLE_GEMINI_API_KEY
+ARG VITE_SOCKET_IO_URL
+ARG VITE_API_TIMEOUT
+RUN npm run build
+
+# ---------- Production Stage ----------
+FROM nginx:stable-alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+# Optional: custom nginx config (e.g., SPA fallback)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+> **Tip**: If you need a custom Nginx configuration (e.g., to support client‑side routing), edit `nginx.conf` before rebuilding.
 
 ### Vercel (Frontend‑only)  
 
@@ -286,28 +318,4 @@ We welcome contributions! Please follow these steps:
 
 ### Code Style  
 
-- **Prettier** is enforced on all `.js/.jsx/.css` files.  
-- **ESLint** rules are based on the Airbnb React style guide with additional React‑hooks checks.  
-- Use **functional components** and **React Hooks** exclusively; avoid class components.  
-
----  
-
-## Troubleshooting  
-
-| Issue | Solution |
-|-------|----------|
-| **Cannot connect to backend** | Verify that `VITE_BACKEND_URL` points to a reachable server and that CORS is enabled on the backend. |
-| **AI generation returns 401** | Ensure your OpenAI / Google Gemini API keys are valid and correctly set in `.env`. |
-| **Live session not updating** | Check that the Socket.io client can reach the backend (`VITE_SOCKET_IO_URL`). Open the browser console for connection errors. |
-| **Hints not appearing** | Confirm you are calling the `/api/quizzes/generate` endpoint with `includeHints=true` and that the backend version supports hints (v1.11.0+). |
-| **Build fails with “module not found”** | Run `npm install` again to refresh the lockfile, then `npm run build`. |
-| **Docker container returns 404** | Confirm that the `dist/` folder exists (run `npm run build` before building the image). |
-| **Environment variable `VITE_API_TIMEOUT` ignored** | Restart the dev server after changing `.env` values (`npm run dev`). |
-
-For additional help, open an issue or join the discussion in the **#questions** channel of the repository.
-
----  
-
-## License & Credits  
-
-**License:** MIT – see the [LICENSE](LICENSE) file
+- **
