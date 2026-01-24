@@ -13,7 +13,7 @@
 
 **Live demo** | **Documentation** | **Issues**  
 ---|---|---  
-[🚀 Demo (hosted)](https://quizifyai.me) | [🐞 Report a bug](https:quizifyai.me)  
+[🚀 Demo (hosted)](https://quizfy-demo.vercel.app) | [📚 Docs (coming soon)](#) | [🐞 Report a bug](https://github.com/GURUDAS-DEV/AI-Based-Quiz-Builder-Quizfy-/issues)  
 
 ---  
 
@@ -203,7 +203,7 @@ The `dist/` folder contains the compiled assets (JS bundles, images, fonts, etc.
 
 ### Docker (Recommended for Production)  
 
-A **multi‑stage Dockerfile** is now part of the repository (`Dockerfile`). It builds the React app in a Node environment, then serves the static files with **Nginx**. The image is lightweight (~30 MB) and ready for production.
+A **multi‑stage Dockerfile** is included (`Dockerfile`). It builds the React app in a Node environment, then serves the static files with **Nginx**. The image is lightweight (~30 MB) and ready for production.
 
 #### Build the Docker image  
 
@@ -318,4 +318,4 @@ We welcome contributions! Please follow these steps:
 
 ### Code Style  
 
-- **
+- **Prettier** for formatting (`npm
