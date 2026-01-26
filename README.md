@@ -171,6 +171,36 @@ The app will be available at `http://localhost:3000` (or the port shown in the c
 | **Format** | `npm run format` |
 | **Check TypeScript (if added later)** | `npm run tsc` |
 
+### Linting & Formatting (ESLint)  
+
+Quizfy uses **ESLint** together with **Prettier** to enforce a clean and consistent codebase.
+
+* **Run the linter** – Detects problems in JavaScript/JSX files:  
+
+  ```bash
+  npm run lint
+  # or
+  yarn lint
+  ```
+
+* **Auto‑fixable issues** – ESLint can automatically fix many problems. Use the `--fix` flag:  
+
+  ```bash
+  npm run lint -- --fix
+  # or
+  yarn lint --fix
+  ```
+
+* **Formatting** – Prettier formats the code according to the project's style rules:  
+
+  ```bash
+  npm run format
+  # or
+  yarn format
+  ```
+
+> **Tip**: Add a pre‑commit hook (e.g., with `husky`) to run `npm run lint && npm run format` automatically before each commit.
+
 ### Code Structure Overview  
 
 ```
@@ -313,11 +343,4 @@ We welcome contributions! Please follow these steps:
 | **Start dev server** | `npm run dev` |
 | **Run unit tests** | `npm test` |
 | **Run end‑to‑end tests** (if added) | `npm run e2e` |
-| **Check code style** | `npm run lint` |
-| **Format files** | `npm run format` |
-
-### Code Style  
-
-- **Prettier** – Enforces consistent code formatting. Run `npm run format` to automatically format all files.  
-- **ESLint** – Lints JavaScript/JSX files using the recommended React and Hooks rules. Run `npm run lint` to see any violations.
-- Happy coding 
+| **Check code
