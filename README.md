@@ -320,3 +320,4 @@ We welcome contributions! Please follow these steps:
 
 - **Prettier** – Enforces consistent code formatting. Run `npm run format` to automatically format all files.  
 - **ESLint** – Lints JavaScript/JSX files using the recommended React and Hooks rules. Run `npm run lint` to see any violations.
+- Happy coding 
