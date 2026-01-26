@@ -317,5 +317,6 @@ We welcome contributions! Please follow these steps:
 | **Format files** | `npm run format` |
 
 ### Code Style  
+This project is also being dockerized ao you can check them in place
 
 - **Prettier** for formatting (`npm
