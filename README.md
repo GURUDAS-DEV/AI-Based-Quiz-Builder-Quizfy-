@@ -317,6 +317,6 @@ We welcome contributions! Please follow these steps:
 | **Format files** | `npm run format` |
 
 ### Code Style  
-This project is also being dockerized ao you can check them in place
 
-- **Prettier** for formatting (`npm
+- **Prettier** – Enforces consistent code formatting. Run `npm run format` to automatically format all files.  
+- **ESLint** – Lints JavaScript/JSX files using the recommended React and Hooks rules. Run `npm run lint` to see any violations.
